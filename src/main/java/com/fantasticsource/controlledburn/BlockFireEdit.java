@@ -149,7 +149,14 @@ public class BlockFireEdit extends BlockFire
 
     public boolean callerNameContains(String subString)
     {
-        return Thread.currentThread().getStackTrace()[2].getClassName().toLowerCase().contains(subString.toLowerCase());
+        subString = subString.toLowerCase();
+
+        StackTraceElement[] stack = Thread.currentThread().getStackTrace();
+        for (StackTraceElement element : stack)
+        {
+            if (element.getClassName().toLowerCase().contains(subString)) return true;
+        }
+        return false;
     }
 
     @Override

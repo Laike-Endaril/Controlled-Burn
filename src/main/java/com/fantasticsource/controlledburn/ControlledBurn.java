@@ -23,7 +23,6 @@ import java.lang.reflect.Modifier;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 import static com.fantasticsource.controlledburn.FireConfig.*;
 
@@ -31,7 +30,7 @@ import static com.fantasticsource.controlledburn.FireConfig.*;
 public class ControlledBurn {
     public static final String MODID = "controlledburn";
     public static final String NAME = "Controlled Burn";
-    public static final String VERSION = "1.12.2.007";
+    public static final String VERSION = "1.12.2.008";
 
     private static Logger logger;
 
