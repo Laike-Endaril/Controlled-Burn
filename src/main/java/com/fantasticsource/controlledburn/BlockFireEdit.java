@@ -79,7 +79,7 @@ public class BlockFireEdit extends BlockFire
         //Optional debug output; see config file for description (or enable it there and see what it outputs)
         if (ControlledBurn.debug)
         {
-            System.out.println("Fire at " + pos.toString());
+            System.out.println("Fire age " + age + " at " + pos.toString());
             if (ControlledBurn.detailedDebug)
             {
                 String[] strings = new String[] {"Up: ", "Down: ", "North: ", "South: ", "East: ", "West: "};
@@ -131,14 +131,21 @@ public class BlockFireEdit extends BlockFire
                                 int spreadDifficulty = (trySpreadY > 1 ? 100 + (trySpreadY - 1) * 100 : 100);
                                 if (spreadStrength > 0 && rand.nextInt(spreadDifficulty) <= spreadStrength && (ignoreRain || !worldIn.isRaining() || !canDie(worldIn, spreadPos)))
                                 {
-                                    int childAge = age + rand.nextInt(5) / 4;
+                                    if (spreadStrengthNatural == -1) {
+                                        int childAge = age + rand.nextInt(5) / 4;
 
-                                    if (childAge > ControlledBurn.maxFireAge())
-                                    {
-                                        childAge = ControlledBurn.maxFireAge();
+                                        if (childAge > ControlledBurn.maxFireAge()) {
+                                            childAge = ControlledBurn.maxFireAge();
+                                        }
+
+                                        worldIn.setBlockState(spreadPos, state.withProperty(AGE, childAge), 3);
                                     }
+                                    else if (spreadStrengthNatural != 0)
+                                    {
+                                        int childAge = ControlledBurn.maxFireAge() - (ControlledBurn.maxFireAge() - age) * spreadStrengthNatural / 100;
 
-                                    worldIn.setBlockState(spreadPos, state.withProperty(AGE, childAge), 3);
+                                        if (childAge < ControlledBurn.maxFireAge()) worldIn.setBlockState(spreadPos, state.withProperty(AGE, childAge), 3);
+                                    }
                                 }
                             }
                         }
@@ -185,15 +192,21 @@ public class BlockFireEdit extends BlockFire
             {
                 //Replace destroyed (burnt) block with new fire block
 
-                if (age < ControlledBurn.maxFireAge()) //If source fire block's age is less than max...
-                {
-                    //...75% chance to set child's age to source's age, and 25% to set it 1 higher
-                    worldIn.setBlockState(pos, getDefaultState().withProperty(AGE, (random.nextInt(5) == 4 ? age + 1 : age)), 3);
+                if (spreadStrengthWhenDestroying == -1) {
+                    if (age < ControlledBurn.maxFireAge()) //If source fire block's age is less than max...
+                    {
+                        //...75% chance to set child's age to source's age, and 25% to set it 1 higher
+                        worldIn.setBlockState(pos, getDefaultState().withProperty(AGE, (random.nextInt(5) == 4 ? age + 1 : age)), 3);
+                    } else {
+                        //Otherwise, set child's age to source's age (which is also max age in this case)
+                        worldIn.setBlockState(pos, getDefaultState().withProperty(AGE, age), 3);
+                    }
                 }
-                else
+                else if (spreadStrengthWhenDestroying != 0)
                 {
-                    //Otherwise, set child's age to source's age (which is also max age in this case)
-                    worldIn.setBlockState(pos, getDefaultState().withProperty(AGE, age), 3);
+                    int childAge = ControlledBurn.maxFireAge() - (ControlledBurn.maxFireAge() - age) * spreadStrengthWhenDestroying / 100;
+
+                    if (childAge < ControlledBurn.maxFireAge()) worldIn.setBlockState(pos, getDefaultState().withProperty(AGE, childAge), 3);
                 }
             }
             else

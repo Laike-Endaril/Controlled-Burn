@@ -25,7 +25,7 @@ public class FireConfig
             "Does nothing if dontDestroyBlocks is set to true",
             "The default/vanilla value in MC version 1.12.2 is 1.0",
             ""
-            })
+    })
     public static float fireSpreadSpeedMultiplier = 1;
 
     @Comment({
@@ -73,6 +73,32 @@ public class FireConfig
     @Comment({
             "",
             "",
+            "When fire spreads naturally, ie. not when it's spreading by destroying (burning) a block, the new fire's duration is set to the duration of the fire it came from, multiplied by this",
+            "Fire's lifetime is only measured in integers from 0 to 15, so if you set the percentage to anything lower than 7 it will be the same as if you set it to 0",
+            "Uses a full-number percentage (25 means 25% strength, 75 means 75% strength)",
+            "The normal vanilla fire mechanics don't use a percentage reduction like this, so set this to -1.0 if you want vanilla mechanics in this regard",
+            "The default/vanilla value in MC version 1.12.2 is -1",
+            ""
+    })
+    @Config.RangeInt(min = -1, max = 100)
+    public static int spreadStrengthNatural = -1;
+
+    @Comment({
+            "",
+            "",
+            "When fire spreads by destroying a block, the new fire's duration is set to the duration of the fire it came from, multiplied by this",
+            "Fire's lifetime is only measured in integers from 0 to 15, so if you set the percentage to anything lower than 7 it will be the same as if you set it to 0",
+            "Uses a full-number percentage (25 means 25% strength, 75 means 75% strength)",
+            "The normal vanilla fire mechanics don't use a percentage reduction like this, so set this to -1.0 if you want vanilla mechanics in this regard",
+            "The default/vanilla value in MC version 1.12.2 is -1",
+            ""
+    })
+    @Config.RangeInt(min = -1, max = 100)
+    public static int spreadStrengthWhenDestroying = -1;
+
+    @Comment({
+            "",
+            "",
             "",
             "Here are some example setups:",
             "",
@@ -87,6 +113,7 @@ public class FireConfig
             "ignoreRain=false",
             "maxReplaceBlockWithFireChance=80",
             "minReplaceBlockWithFireChance=50",
+            "spreadStrengthNatural=-1",
             "",
             "",
             "",
