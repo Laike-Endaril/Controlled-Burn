@@ -73,7 +73,7 @@ public class BlockFireEdit extends BlockFire
             }
             //No fire source below, but a neighbor can catch fire
 
-            if (!canCatchFire(worldIn, pos.down()) && age == ControlledBurn.maxFireAge() && rand.nextInt(4) == 0)
+            if (!canCatchFire(worldIn, pos.down()) && age >= ControlledBurn.maxFireAge() && rand.nextInt(4) == 0)
             {
                 worldIn.setBlockToAir(pos); //25% chance to extinguish if age is maxed and block below isn't flammable
                 return;
@@ -133,7 +133,8 @@ public class BlockFireEdit extends BlockFire
                                     }
                                     else if (spreadStrengths.naturalSpreadStrength != 0)
                                     {
-                                        int childAge = ControlledBurn.maxFireAge() - (ControlledBurn.maxFireAge() - age) * spreadStrengths.naturalSpreadStrength / 100;
+                                        int childAge = age < 0 ? 0 : age > ControlledBurn.maxFireAge() ? ControlledBurn.maxFireAge() : age;
+                                        childAge = ControlledBurn.maxFireAge() - (ControlledBurn.maxFireAge() - childAge) * spreadStrengths.naturalSpreadStrength / 100;
 
                                         if (childAge < ControlledBurn.maxFireAge()) worldIn.setBlockState(spreadPos, state.withProperty(AGE, childAge), 3);
                                     }
@@ -221,7 +222,13 @@ public class BlockFireEdit extends BlockFire
                     int childAge = ControlledBurn.maxFireAge() - (ControlledBurn.maxFireAge() - age) * spreadStrengths.burnSpreadStrength / 100;
 
                     if (childAge < ControlledBurn.maxFireAge()) worldIn.setBlockState(pos, getDefaultState().withProperty(AGE, childAge), 3);
+                    else
+                    {
+                        if (spreadStrengths.burnSpreadStrength != 100) worldIn.setBlockToAir(pos);
+                        else worldIn.setBlockState(pos, getDefaultState().withProperty(AGE, age), 3);
+                    }
                 }
+                else worldIn.setBlockToAir(pos);
             }
             else
             {
