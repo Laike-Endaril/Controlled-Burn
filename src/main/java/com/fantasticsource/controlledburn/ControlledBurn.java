@@ -19,7 +19,7 @@ import java.util.Objects;
 
 import static com.fantasticsource.controlledburn.FireConfig.*;
 
-@Mod(modid = ControlledBurn.MODID, name = ControlledBurn.NAME, version = ControlledBurn.VERSION)
+@Mod(modid = ControlledBurn.MODID, name = ControlledBurn.NAME, version = ControlledBurn.VERSION, acceptableRemoteVersions = "*")
 public class ControlledBurn {
     public static final String MODID = "controlledburn";
     public static final String NAME = "Controlled Burn";
