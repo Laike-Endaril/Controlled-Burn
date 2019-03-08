@@ -6,8 +6,11 @@ import net.minecraft.block.BlockFire;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.config.Config;
+import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.world.BlockEvent;
+import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -17,6 +20,7 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import org.apache.logging.log4j.Logger;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.LinkedHashMap;
@@ -29,12 +33,15 @@ import static com.fantasticsource.controlledburn.FireConfig.*;
 public class ControlledBurn {
     public static final String MODID = "controlledburn";
     public static final String NAME = "Controlled Burn";
-    public static final String VERSION = "1.12.2.010";
+    public static final String VERSION = "1.12.2.011";
 
     private static Logger logger;
 
+    public static File configFile;
+
     public static int replaceBlockWithFireChanceRange;
     public static BlockFire oldFire;
+
 
 
     public ControlledBurn() {
@@ -61,6 +68,7 @@ public class ControlledBurn {
     public void preInit(FMLPreInitializationEvent event)
     {
         logger = event.getModLog();
+        configFile = event.getSuggestedConfigurationFile();
     }
 
     @EventHandler
@@ -121,11 +129,15 @@ public class ControlledBurn {
                 System.err.println("Could not find block: " + entry.getKey());
             }
         }
+    }
 
-//        for (Map.Entry<ResourceLocation, Block> entry : ForgeRegistries.BLOCKS.getEntries())
-//        {
-//            System.out.println(entry.getKey().toString() + " === " + entry.getValue().getUnlocalizedName());
-//        }
+    @SubscribeEvent
+    public static void saveConfig(ConfigChangedEvent.OnConfigChangedEvent event)
+    {
+        if (event.getModID().equals(MODID))
+        {
+            ConfigManager.sync(MODID, Config.Type.INSTANCE);
+        }
     }
 
     @SubscribeEvent
