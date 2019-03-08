@@ -1,7 +1,13 @@
 package com.fantasticsource.controlledburn;
 
+import javafx.util.Pair;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.Config.Comment;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @Config(modid = ControlledBurn.MODID)
 public class FireConfig
@@ -158,17 +164,7 @@ public class FireConfig
             "VANILLA",
             "This emulates normal vanilla fire behavior, and SHOULD BE the default settings when this mod is first installed",
             "",
-            "fireBurnSpeedMultiplier=1.0",
-            "fireSpreadSpeedMultiplier=1.0",
-            "ignoreHumidBiomes=false",
-            "ignoreRain=false",
-            "maxReplaceBlockWithFireChance=80",
-            "minReplaceBlockWithFireChance=50",
-            "reachAbove=4",
-            "reachBelow=1",
-            "reachHorizontal=1",
-            "spreadStrengthNatural=-1",
-            "spreadStrengthWhenDestroying=-1",
+            "No changes to config file; can reset to this by deleting this config file and re-running minecraft",
             "",
             "",
             "",
@@ -179,15 +175,6 @@ public class FireConfig
             "",
             "fireBurnSpeedMultiplier=0",
             "fireSpreadSpeedMultiplier=0",
-            "ignoreHumidBiomes=false",
-            "ignoreRain=false",
-            "maxReplaceBlockWithFireChance=80",
-            "minReplaceBlockWithFireChance=50",
-            "reachAbove=4",
-            "reachBelow=1",
-            "reachHorizontal=1",
-            "spreadStrengthNatural=-1",
-            "spreadStrengthWhenDestroying=-1",
             "",
             "",
             "",
@@ -197,15 +184,6 @@ public class FireConfig
             "",
             "fireBurnSpeedMultiplier=1.0",
             "fireSpreadSpeedMultiplier=0",
-            "ignoreHumidBiomes=false",
-            "ignoreRain=false",
-            "maxReplaceBlockWithFireChance=80",
-            "minReplaceBlockWithFireChance=50",
-            "reachAbove=4",
-            "reachBelow=1",
-            "reachHorizontal=1",
-            "spreadStrengthNatural=-1",
-            "spreadStrengthWhenDestroying=-1",
             "",
             "",
             "",
@@ -219,15 +197,51 @@ public class FireConfig
             "ignoreRain=false",
             "maxReplaceBlockWithFireChance=100",
             "minReplaceBlockWithFireChance=100",
-            "reachAbove=4",
-            "reachBelow=1",
-            "reachHorizontal=1",
-            "spreadStrengthNatural=-1",
-            "spreadStrengthWhenDestroying=-1",
             "",
             "",
             "",
             "Oh and if you haven't already figured out, the variable below this comment does nothing (except allow me to put comments here)"
     })
     public static boolean zADummyVarForThisFooterCommentBecauseIDontKnowAnyOtherWayToPutOneHere = false;
+
+    @Comment({
+            "",
+            "",
+            "This allows you to set a custom BASE flammability for any given block",
+            "The EFFECTIVE flammability of the block will be this value times fireBurnSpeedMultiplier",
+            "",
+            "Examples:",
+            "",
+            "",
+            "",
+            "Makes it so planks are not flammable",
+            "",
+            "blockflammabilities {",
+            "    S:\"minecraft:planks\"=0",
+            "}",
+            "",
+            "",
+            "",
+            "Makes it so fire spreads naturally...and FAST...on the TOP of netherrack (THIS IS A BAD IDEA; YOU SHOULD NOT DO THIS!)",
+            "",
+            "blockencouragements {",
+            "    S:\"minecraft:netherrack\"=1000",
+            "}",
+            "",
+            "",
+            "",
+            "Makes grassy dirt blocks flammable!",
+            "",
+            "blockflammabilities {",
+            "    S:\"minecraft:grass\"=20",
+            "}",
+            "",
+            "blockencouragements {",
+            "    S:\"minecraft:grass\"=5",
+            "}",
+            "",
+            ""
+    })
+    public static Map<String, Integer> blockFlammabilities = new LinkedHashMap<>();
+    public static Map<String, Integer> blockEncouragements = new LinkedHashMap<>();
 }
