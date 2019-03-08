@@ -14,15 +14,15 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import static com.fantasticsource.controlledburn.FireConfig.*;
-
 import java.util.Random;
+
+import static com.fantasticsource.controlledburn.FireConfig.*;
 
 public class BlockFireEdit extends BlockFire
 {
     public int tickRate(World worldIn)
     {
-        return global_multipliers.tick_delay;
+        return globalMultipliers.tickDelay;
     }
 
     @Override
@@ -42,7 +42,7 @@ public class BlockFireEdit extends BlockFire
         //Check for rain extinguishing
         boolean fireSourceBelow = worldIn.getBlockState(pos.down()).getBlock().isFireSource(worldIn, pos.down(), EnumFacing.UP);
         int age = state.getValue(AGE);
-        if (!fireSourceBelow && (!special_toggles.ignore_rain && worldIn.isRaining() && canDie(worldIn, pos)) && rand.nextFloat() < 0.2F + (float)age * 0.03F)
+        if (!fireSourceBelow && (!specialToggles.ignoreRain && worldIn.isRaining() && canDie(worldIn, pos)) && rand.nextFloat() < 0.2F + (float)age * 0.03F)
         {
             worldIn.setBlockToAir(pos); //Extinguished by rain
             return;
@@ -80,11 +80,11 @@ public class BlockFireEdit extends BlockFire
             }
         }
 
-        boolean feelsHumid = worldIn.isBlockinHighHumidity(pos) && !special_toggles.ignore_humid_biomes;
+        boolean feelsHumid = worldIn.isBlockinHighHumidity(pos) && !specialToggles.ignoreHumidBiomes;
         int humidModifier = (feelsHumid ? -50 : 0);
 
         //Try to destroy (burn) adjacent blocks, possibly replacing them with more fire
-        if (global_multipliers.burn_speed_multiplier != 0) {
+        if (globalMultipliers.burnSpeedMultiplier != 0) {
             tryBurnAdjacent(worldIn, pos.down(), 250 + humidModifier, rand, age, EnumFacing.UP);
             tryBurnAdjacent(worldIn, pos.up(), 250 + humidModifier, rand, age, EnumFacing.DOWN);
             tryBurnAdjacent(worldIn, pos.south(), 300 + humidModifier, rand, age, EnumFacing.NORTH);
@@ -94,13 +94,13 @@ public class BlockFireEdit extends BlockFire
         }
 
         //Try to spread naturally
-        if (global_multipliers.spread_speed_multiplier > 0)
+        if (globalMultipliers.spreadSpeedMultiplier > 0)
         {
-            for (int trySpreadX = -fire_spread_reach.reach_horizontal; trySpreadX <= fire_spread_reach.reach_horizontal; ++trySpreadX)
+            for (int trySpreadX = -spreadRanges.reachHorizontal; trySpreadX <= spreadRanges.reachHorizontal; ++trySpreadX)
             {
-                for (int trySpreadZ = -fire_spread_reach.reach_horizontal; trySpreadZ <= fire_spread_reach.reach_horizontal; ++trySpreadZ)
+                for (int trySpreadZ = -spreadRanges.reachHorizontal; trySpreadZ <= spreadRanges.reachHorizontal; ++trySpreadZ)
                 {
-                    for (int trySpreadY = -fire_spread_reach.reach_below; trySpreadY <= fire_spread_reach.reach_above; ++trySpreadY)
+                    for (int trySpreadY = -spreadRanges.reachBelow; trySpreadY <= spreadRanges.reachAbove; ++trySpreadY)
                     {
                         if (trySpreadX != 0 || trySpreadY != 0 || trySpreadZ != 0)
                         {
@@ -117,9 +117,9 @@ public class BlockFireEdit extends BlockFire
                                 }
 
                                 int spreadDifficulty = (trySpreadY > 1 ? 100 + (trySpreadY - 1) * 100 : 100);
-                                if (spreadStrength > 0 && rand.nextInt(spreadDifficulty) <= spreadStrength && (special_toggles.ignore_rain || !worldIn.isRaining() || !canDie(worldIn, spreadPos)))
+                                if (spreadStrength > 0 && rand.nextInt(spreadDifficulty) <= spreadStrength && (specialToggles.ignoreRain || !worldIn.isRaining() || !canDie(worldIn, spreadPos)))
                                 {
-                                    if (spread_strengths.natural_spread_strength == -1) {
+                                    if (spreadStrengths.naturalSpreadStrength == -1) {
                                         int childAge = age + rand.nextInt(5) / 4;
 
                                         if (childAge > ControlledBurn.maxFireAge()) {
@@ -128,9 +128,9 @@ public class BlockFireEdit extends BlockFire
 
                                         worldIn.setBlockState(spreadPos, state.withProperty(AGE, childAge), 3);
                                     }
-                                    else if (spread_strengths.natural_spread_strength != 0)
+                                    else if (spreadStrengths.naturalSpreadStrength != 0)
                                     {
-                                        int childAge = ControlledBurn.maxFireAge() - (ControlledBurn.maxFireAge() - age) * spread_strengths.natural_spread_strength / 100;
+                                        int childAge = ControlledBurn.maxFireAge() - (ControlledBurn.maxFireAge() - age) * spreadStrengths.naturalSpreadStrength / 100;
 
                                         if (childAge < ControlledBurn.maxFireAge()) worldIn.setBlockState(spreadPos, state.withProperty(AGE, childAge), 3);
                                     }
@@ -149,7 +149,7 @@ public class BlockFireEdit extends BlockFire
     public boolean canPlaceBlockAt(World worldIn, BlockPos pos)
     {
         return (worldIn.getBlockState(pos.down()).isTopSolid() || this.canNeighborCatchFire(worldIn, pos))
-                && (!special_toggles.no_lightning_fire || !callerNameContains("Lightning"));
+                && (!specialToggles.noLightningFire || !callerNameContains("Lightning"));
     }
 
     public boolean callerNameContains(String subString)
@@ -169,20 +169,20 @@ public class BlockFireEdit extends BlockFire
     {
         int baseFlammability = super.getFlammability(blockIn);
 
-        if (global_multipliers.burn_speed_multiplier == 0)
+        if (globalMultipliers.burnSpeedMultiplier == 0)
         {
             if (baseFlammability > 0) return 1;
             if (baseFlammability < 0) return -1; //Not sure why this would be a thing, but here's your compatibility
             return 0;
         }
 
-        return (int) (baseFlammability * global_multipliers.burn_speed_multiplier);
+        return (int) (baseFlammability * globalMultipliers.burnSpeedMultiplier);
     }
 
     @Override
     public int getEncouragement(Block blockIn)
     {
-        return (int) (super.getEncouragement(blockIn) * global_multipliers.spread_speed_multiplier);
+        return (int) (super.getEncouragement(blockIn) * globalMultipliers.spreadSpeedMultiplier);
     }
 
     private void tryBurnAdjacent(World worldIn, BlockPos pos, int chance, Random random, int age, EnumFacing face)
@@ -193,14 +193,14 @@ public class BlockFireEdit extends BlockFire
         {
             //Destroy (burn) this adjacent block
             int replaceBlockWithFireChance;
-            if (ControlledBurn.fireAgeRange() == 0) replaceBlockWithFireChance = burn_spread_chances.min_burn_spread_chance + ControlledBurn.replaceBlockWithFireChanceRange / 2;
-            else replaceBlockWithFireChance = (int) (burn_spread_chances.min_burn_spread_chance + ControlledBurn.replaceBlockWithFireChanceRange * (float) age / ControlledBurn.fireAgeRange());
+            if (ControlledBurn.fireAgeRange() == 0) replaceBlockWithFireChance = burnSpreadChances.minBurnSpreadChance + ControlledBurn.replaceBlockWithFireChanceRange / 2;
+            else replaceBlockWithFireChance = (int) (burnSpreadChances.minBurnSpreadChance + ControlledBurn.replaceBlockWithFireChanceRange * (float) age / ControlledBurn.fireAgeRange());
 
-            if (random.nextInt(100) < replaceBlockWithFireChance && (!worldIn.isRainingAt(pos) || special_toggles.ignore_rain))
+            if (random.nextInt(100) < replaceBlockWithFireChance && (!worldIn.isRainingAt(pos) || specialToggles.ignoreRain))
             {
                 //Replace destroyed (burnt) block with new fire block
 
-                if (spread_strengths.burn_spread_strength == -1) {
+                if (spreadStrengths.burnSpreadStrength == -1) {
                     if (age < ControlledBurn.maxFireAge()) //If source fire block's age is less than max...
                     {
                         //...75% chance to set child's age to source's age, and 25% to set it 1 higher
@@ -210,9 +210,9 @@ public class BlockFireEdit extends BlockFire
                         worldIn.setBlockState(pos, getDefaultState().withProperty(AGE, age), 3);
                     }
                 }
-                else if (spread_strengths.burn_spread_strength != 0)
+                else if (spreadStrengths.burnSpreadStrength != 0)
                 {
-                    int childAge = ControlledBurn.maxFireAge() - (ControlledBurn.maxFireAge() - age) * spread_strengths.burn_spread_strength / 100;
+                    int childAge = ControlledBurn.maxFireAge() - (ControlledBurn.maxFireAge() - age) * spreadStrengths.burnSpreadStrength / 100;
 
                     if (childAge < ControlledBurn.maxFireAge()) worldIn.setBlockState(pos, getDefaultState().withProperty(AGE, childAge), 3);
                 }
