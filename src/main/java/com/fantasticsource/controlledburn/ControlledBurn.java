@@ -29,7 +29,7 @@ import static com.fantasticsource.controlledburn.FireConfig.*;
 public class ControlledBurn {
     public static final String MODID = "controlledburn";
     public static final String NAME = "Controlled Burn";
-    public static final String VERSION = "1.12.2.009";
+    public static final String VERSION = "1.12.2.010";
 
     private static Logger logger;
 
@@ -66,16 +66,16 @@ public class ControlledBurn {
     @EventHandler
     public void postInit(FMLPostInitializationEvent event)
     {
-        replaceBlockWithFireChanceRange = maxReplaceBlockWithFireChance - minReplaceBlockWithFireChance;
+        replaceBlockWithFireChanceRange = burn_spread_chances.max_burn_spread_chance - burn_spread_chances.min_burn_spread_chance;
 
         Map<String, Pair<Integer, Integer>> data = new LinkedHashMap<>();
 
-        for (Map.Entry<String, Integer> entry : blockFlammabilities.entrySet())
+        for (Map.Entry<String, Integer> entry : block_flammabilities.entrySet())
         {
             data.put(entry.getKey(), new Pair<>(entry.getValue(), null));
         }
 
-        for (Map.Entry<String, Integer> entry : blockEncouragements.entrySet())
+        for (Map.Entry<String, Integer> entry : block_encouragements.entrySet())
         {
             if (!data.containsKey(entry.getKey())) data.put(entry.getKey(), new Pair<>(null, entry.getValue()));
             else data.put(entry.getKey(), new Pair<>(data.get(entry.getKey()).getKey(), entry.getValue()));
@@ -131,7 +131,7 @@ public class ControlledBurn {
     @SubscribeEvent
     public static void fluidPlacingBlock(BlockEvent.FluidPlaceBlockEvent event)
     {
-        if (noLavaFire && event.getNewState().getBlock().getClass() == BlockFireEdit.class)
+        if (special_toggles.no_lava_fire && event.getNewState().getBlock().getClass() == BlockFireEdit.class)
         {
             event.setNewState(event.getOriginalState());
         }
@@ -154,8 +154,6 @@ public class ControlledBurn {
         }
 
         try {
-            f.setAccessible(true);
-
             Field modifiersField = Field.class.getDeclaredField("modifiers");
             modifiersField.setAccessible(true);
             modifiersField.setInt(f, f.getModifiers() & ~Modifier.FINAL);
