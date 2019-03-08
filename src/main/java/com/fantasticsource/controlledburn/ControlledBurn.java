@@ -15,11 +15,9 @@ import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
-import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -36,7 +34,6 @@ public class ControlledBurn
     public static final String VERSION = "1.12.2.013";
     public static int replaceBlockWithFireChanceRange;
     public static BlockFire oldFire;
-    private static Logger logger;
 
 
     public ControlledBurn()
@@ -134,16 +131,10 @@ public class ControlledBurn
     {
         IBlockState blockState = event.getWorld().getBlockState(event.getPos().up());
         System.out.println(blockState.getBlock().getLocalizedName());
-        for(Map.Entry<IProperty<?>, Comparable<?>> entry : blockState.getProperties().entrySet())
+        for (Map.Entry<IProperty<?>, Comparable<?>> entry : blockState.getProperties().entrySet())
         {
             System.out.println(entry.getKey().getName() + " = " + entry.getValue());
         }
-    }
-
-    @EventHandler
-    public void preInit(FMLPreInitializationEvent event)
-    {
-        logger = event.getModLog();
     }
 
     @EventHandler
