@@ -1,0 +1,16 @@
+[
+{
+  "modid": "controlledburn",
+  "name": "Controlled Burn",
+  "description": "Fast fire, slow fire, much fire, no fire!  Control fire spread speeds and conditions!",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Laike_Endaril"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
