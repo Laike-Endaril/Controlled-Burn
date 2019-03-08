@@ -13,6 +13,33 @@ public class FireConfig
             "Also includes the setting for how often fire updates (which makes everything fire-related faster or slower)"
     })
     public static GlobalMultipliers globalMultipliers = new GlobalMultipliers();
+    @Comment({"Includes whether certain sources can start fires, whether fire ignores rain, and other oddities"})
+    public static SpecialToggles specialToggles = new SpecialToggles();
+    @Comment({"These determine how often fire spreads to adjacent blocks after burning a block"})
+    public static BurnSpreadChances burnSpreadChances = new BurnSpreadChances();
+    @Config.Name("Natural Fire Spread Ranges")
+    @Comment({"How far fire can naturally spread from one block to another in each direction"})
+    public static FireSpreadRanges spreadRanges = new FireSpreadRanges();
+    @Config.Name("Spread Strengths")
+    @Comment({"How much 'life' new fires have when spreading"})
+    public static SpreadStrengths spreadStrengths = new SpreadStrengths();
+    @Config.Name("Block-Specific Settings")
+    @Comment({
+            "This allows you to set a custom BASE flammability and encouragement for any given block",
+            "",
+            "The EFFECTIVE stats of the block will be these values times their respective multipliers",
+            "",
+            "Flammability is how fast/easily the block is destroyed by fire",
+            "",
+            "Encouragement is how fast/easily fire spreads to the block",
+            "",
+            "The equals symbol can be used to leave a base stat as-is (eg, if you only want to change one stat)",
+            "",
+            "Syntax is [blockID, flammability, encouragement]. Examples below",
+            "minecraft:grass, 5, 5",
+            "minecraft:dirt, =, 5"
+    })
+    public static String[] blockSettings = {};
 
     public static class GlobalMultipliers
     {
@@ -46,10 +73,6 @@ public class FireConfig
         public int tickDelay = 30;
     }
 
-
-    @Comment({"Includes whether certain sources can start fires, whether fire ignores rain, and other oddities"})
-    public static SpecialToggles specialToggles = new SpecialToggles();
-
     public static class SpecialToggles
     {
         @Config.Name("Ignore Humid Biomes")
@@ -77,10 +100,6 @@ public class FireConfig
         public boolean noLightningFire = false;
     }
 
-
-    @Comment({"These determine how often fire spreads to adjacent blocks after burning a block"})
-    public static BurnSpreadChances burnSpreadChances = new BurnSpreadChances();
-
     public static class BurnSpreadChances
     {
         @Config.Name("Max Burn Spread Chance")
@@ -106,11 +125,6 @@ public class FireConfig
         public int minBurnSpreadChance = 50;
     }
 
-
-    @Config.Name("Natural Fire Spread Ranges")
-    @Comment({"How far fire can naturally spread from one block to another in each direction"})
-    public static FireSpreadRanges spreadRanges = new FireSpreadRanges();
-
     public static class FireSpreadRanges
     {
         @Config.Name("Reach (Upwards)")
@@ -128,11 +142,6 @@ public class FireConfig
         @Config.RangeInt(min = 0)
         public int reachHorizontal = 1;
     }
-
-
-    @Config.Name("Spread Strengths")
-    @Comment({"How much 'life' new fires have when spreading"})
-    public static SpreadStrengths spreadStrengths = new SpreadStrengths();
 
     public static class SpreadStrengths
     {
@@ -162,22 +171,4 @@ public class FireConfig
         @Config.RangeInt(min = -1, max = 100)
         public int naturalSpreadStrength = -1;
     }
-
-    @Config.Name("Block-Specific Settings")
-    @Comment({
-            "This allows you to set a custom BASE flammability and encouragement for any given block",
-            "",
-            "The EFFECTIVE stats of the block will be these values times their respective multipliers",
-            "",
-            "Flammability is how fast/easily the block is destroyed by fire",
-            "",
-            "Encouragement is how fast/easily fire spreads to the block",
-            "",
-            "The equals symbol can be used to leave a base stat as-is (eg, if you only want to change one stat)",
-            "",
-            "Syntax is [blockID, flammability, encouragement]. Examples below",
-            "minecraft:grass, 5, 5",
-            "minecraft:dirt, =, 5"
-    })
-    public static String[] blockSettings = {};
 }

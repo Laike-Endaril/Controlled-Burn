@@ -25,29 +25,30 @@ import java.util.Objects;
 import static com.fantasticsource.controlledburn.FireConfig.specialToggles;
 
 @Mod(modid = ControlledBurn.MODID, name = ControlledBurn.NAME, version = ControlledBurn.VERSION, acceptableRemoteVersions = "*")
-public class ControlledBurn {
+public class ControlledBurn
+{
     public static final String MODID = "controlledburn";
     public static final String NAME = "Controlled Burn";
-    public static final String VERSION = "1.12.2.012";
-
-    private static Logger logger;
-
+    public static final String VERSION = "1.12.2.013";
     public static int replaceBlockWithFireChanceRange;
     public static BlockFire oldFire;
+    private static Logger logger;
 
 
-
-    public ControlledBurn() {
+    public ControlledBurn()
+    {
         MinecraftForge.EVENT_BUS.register(ControlledBurn.class);
         oldFire = Blocks.FIRE;
     }
 
-    public static int minFireAge() {
+    public static int minFireAge()
+    {
         Object[] ageArray = BlockFireEdit.AGE.getAllowedValues().toArray();
         return (int) ageArray[0];
     }
 
-    public static int maxFireAge() {
+    public static int maxFireAge()
+    {
         Object[] ageArray = BlockFireEdit.AGE.getAllowedValues().toArray();
         return (int) ageArray[ageArray.length - 1];
     }
@@ -55,18 +56,6 @@ public class ControlledBurn {
     public static int fireAgeRange()
     {
         return maxFireAge() - minFireAge();
-    }
-
-    @EventHandler
-    public void preInit(FMLPreInitializationEvent event)
-    {
-        logger = event.getModLog();
-    }
-
-    @EventHandler
-    public void postInit(FMLPostInitializationEvent event)
-    {
-        FireData.update();
     }
 
     @SubscribeEvent
@@ -104,7 +93,8 @@ public class ControlledBurn {
         event.getRegistry().register(newFire);
 
         Field f;
-        try {
+        try
+        {
             f = ReflectionHelper.findField(Blocks.class, "field_150480_ab");
         }
         catch (ReflectionHelper.UnableToFindFieldException e)
@@ -112,13 +102,16 @@ public class ControlledBurn {
             f = ReflectionHelper.findField(Blocks.class, "FIRE");
         }
 
-        try {
+        try
+        {
             Field modifiersField = Field.class.getDeclaredField("modifiers");
             modifiersField.setAccessible(true);
             modifiersField.setInt(f, f.getModifiers() & ~Modifier.FINAL);
 
             f.set(null, newFire);
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             e.printStackTrace();
         }
 
@@ -130,5 +123,17 @@ public class ControlledBurn {
                 Blocks.FIRE.setFireInfo(b, oldFire.getEncouragement(b), oldFire.getFlammability(b));
             }
         }
+    }
+
+    @EventHandler
+    public void preInit(FMLPreInitializationEvent event)
+    {
+        logger = event.getModLog();
+    }
+
+    @EventHandler
+    public void postInit(FMLPostInitializationEvent event)
+    {
+        FireData.update();
     }
 }
