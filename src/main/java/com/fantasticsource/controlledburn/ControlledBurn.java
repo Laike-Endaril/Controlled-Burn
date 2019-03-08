@@ -2,14 +2,11 @@ package com.fantasticsource.controlledburn;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFire;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -21,7 +18,6 @@ import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Map;
 import java.util.Objects;
 
 import static com.fantasticsource.controlledburn.FireConfig.specialToggles;
@@ -123,17 +119,6 @@ public class ControlledBurn
             {
                 Blocks.FIRE.setFireInfo(b, oldFire.getEncouragement(b), oldFire.getFlammability(b));
             }
-        }
-    }
-
-    @SubscribeEvent
-    public static void test(PlayerInteractEvent.RightClickBlock event)
-    {
-        IBlockState blockState = event.getWorld().getBlockState(event.getPos().up());
-        System.out.println(blockState.getBlock().getLocalizedName());
-        for (Map.Entry<IProperty<?>, Comparable<?>> entry : blockState.getProperties().entrySet())
-        {
-            System.out.println(entry.getKey().getName() + " = " + entry.getValue());
         }
     }
 
