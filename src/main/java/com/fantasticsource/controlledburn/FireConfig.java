@@ -1,11 +1,8 @@
 package com.fantasticsource.controlledburn;
 
-import javafx.util.Pair;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.Config.Comment;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
