@@ -76,22 +76,6 @@ public class BlockFireEdit extends BlockFire
             }
         }
 
-        //Optional debug output; see config file for description (or enable it there and see what it outputs)
-        if (ControlledBurn.debug)
-        {
-            System.out.println("Fire age " + age + " at " + pos.toString());
-            if (ControlledBurn.detailedDebug)
-            {
-                String[] strings = new String[] {"Up: ", "Down: ", "North: ", "South: ", "East: ", "West: "};
-                int i2 = 0;
-                for (BlockPos bp : new BlockPos[] {pos.up(), pos.down(), pos.north(), pos.south(), pos.east(), pos.west()})
-                {
-                    Block b = worldIn.getBlockState(bp).getBlock();
-                    System.out.println(strings[i2++] + b.getLocalizedName() + " Encouragement: " + getEncouragement(b) + " Flammability: " + getFlammability(b));
-                }
-            }
-        }
-
         boolean feelsHumid = worldIn.isBlockinHighHumidity(pos) && !ignoreHumidBiomes;
         int humidModifier = (feelsHumid ? -50 : 0);
 
@@ -155,6 +139,18 @@ public class BlockFireEdit extends BlockFire
         }
 
         worldIn.scheduleUpdate(pos, this, tickRate(worldIn) + rand.nextInt(10));
+    }
+
+    @Override
+    public boolean canPlaceBlockAt(World worldIn, BlockPos pos)
+    {
+        return (worldIn.getBlockState(pos.down()).isTopSolid() || this.canNeighborCatchFire(worldIn, pos))
+                && (!noLightningFire || !callerNameContains("Lightning"));
+    }
+
+    public boolean callerNameContains(String subString)
+    {
+        return Thread.currentThread().getStackTrace()[2].getClassName().toLowerCase().contains(subString.toLowerCase());
     }
 
     @Override

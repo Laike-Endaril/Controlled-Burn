@@ -5,6 +5,7 @@ import net.minecraft.block.BlockFire;
 import net.minecraft.init.Blocks;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -23,12 +24,9 @@ import static com.fantasticsource.controlledburn.FireConfig.*;
 public class ControlledBurn {
     public static final String MODID = "controlledburn";
     public static final String NAME = "Controlled Burn";
-    public static final String VERSION = "1.12.2.004";
+    public static final String VERSION = "1.12.2.005";
 
     private static Logger logger;
-
-    public static boolean debug = false;
-    public static boolean detailedDebug = false;
 
     public static int replaceBlockWithFireChanceRange = maxReplaceBlockWithFireChance - minReplaceBlockWithFireChance;
     public static BlockFire oldFire;
@@ -58,6 +56,15 @@ public class ControlledBurn {
     public void preInit(FMLPreInitializationEvent event)
     {
         logger = event.getModLog();
+    }
+
+    @SubscribeEvent
+    public static void fluidPlacingBlock(BlockEvent.FluidPlaceBlockEvent event)
+    {
+        if (noLavaFire && event.getNewState().getBlock().getClass() == BlockFireEdit.class)
+        {
+            event.setNewState(event.getOriginalState());
+        }
     }
 
     @SubscribeEvent

@@ -73,6 +73,24 @@ public class FireConfig
     @Comment({
             "",
             "",
+            "Whether fire spreading from lava is disabled",
+            "The default/vanilla value in MC version 1.12.2 is false",
+            ""
+    })
+    public static boolean noLavaFire = false;
+
+    @Comment({
+            "",
+            "",
+            "Whether fire spreading from lightning is disabled",
+            "The default/vanilla value in MC version 1.12.2 is false",
+            ""
+    })
+    public static boolean noLightningFire = false;
+
+    @Comment({
+            "",
+            "",
             "The maximum upward distance fire can spread to instantaneously",
             "Increasing this too much can have a negative impact on server performance",
             "The default/vanilla value in MC version 1.12.2 is 4",
