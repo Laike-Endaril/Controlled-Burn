@@ -10,7 +10,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -156,15 +155,16 @@ public class BlockFireEdit extends BlockFire
     @Override
     public int getFlammability(Block blockIn)
     {
+        int baseFlammability = super.getFlammability(blockIn);
+
         if (fireBurnSpeedMultiplier == 0)
         {
-            int baseFlammability = super.getFlammability(blockIn);
             if (baseFlammability > 0) return 1;
             if (baseFlammability < 0) return -1; //Not sure why this would be a thing, but here's your compatibility
             return 0;
         }
 
-        return (int) (super.getFlammability(blockIn) * fireBurnSpeedMultiplier);
+        return (int) (baseFlammability * fireBurnSpeedMultiplier);
     }
 
     @Override
@@ -177,7 +177,7 @@ public class BlockFireEdit extends BlockFire
     {
         IBlockState iblockstate = worldIn.getBlockState(pos);
 
-        if (random.nextInt(chance) < getFlammability(iblockstate.getBlock()))
+        if (random.nextInt(chance) < iblockstate.getBlock().getFlammability(worldIn, pos, face))
         {
             //Destroy (burn) this adjacent block
             int replaceBlockWithFireChance;
@@ -222,7 +222,7 @@ public class BlockFireEdit extends BlockFire
     {
         for (EnumFacing enumfacing : EnumFacing.values())
         {
-            if (canCatchFire(worldIn, pos.offset(enumfacing))) return true;
+            if (canCatchFire(worldIn, pos.offset(enumfacing), enumfacing.getOpposite())) return true;
         }
         return false;
     }
@@ -239,18 +239,6 @@ public class BlockFireEdit extends BlockFire
             return i;
         }
         return 0;
-    }
-
-    @Override
-    public boolean canCatchFire(IBlockAccess world, BlockPos pos, EnumFacing face)
-    {
-        return canCatchFire(world, pos);
-    }
-
-    @Override
-    public boolean canCatchFire(IBlockAccess world, BlockPos pos)
-    {
-        return getFlammability(world.getBlockState(pos).getBlock()) > 0;
     }
 
     @SideOnly(Side.CLIENT)
