@@ -73,6 +73,39 @@ public class FireConfig
     @Comment({
             "",
             "",
+            "The maximum upward distance fire can spread to instantaneously",
+            "Increasing this too much can have a negative impact on server performance",
+            "The default/vanilla value in MC version 1.12.2 is 4",
+            ""
+    })
+    @Config.RangeInt(min = 0)
+    public static int reachAbove = 4;
+
+    @Comment({
+            "",
+            "",
+            "The maximum downward distance fire can spread to instantaneously",
+            "Increasing this too much can have a negative impact on server performance",
+            "The default/vanilla value in MC version 1.12.2 is 1",
+            ""
+    })
+    @Config.RangeInt(min = 0)
+    public static int reachBelow = 1;
+
+    @Comment({
+            "",
+            "",
+            "The maximum horizontal distance fire can spread to instantaneously (eg. between two trees)",
+            "Increasing this too much can have a negative impact on server performance",
+            "The default/vanilla value in MC version 1.12.2 is 1",
+            ""
+    })
+    @Config.RangeInt(min = 0)
+    public static int reachHorizontal = 1;
+
+    @Comment({
+            "",
+            "",
             "When fire spreads naturally, ie. not when it's spreading by destroying (burning) a block, the new fire's duration is set to the duration of the fire it came from, multiplied by this",
             "Fire's lifetime is only measured in integers from 0 to 15, so if you set the percentage to anything lower than 7 it will be the same as if you set it to 0",
             "Uses a full-number percentage (25 means 25% strength, 75 means 75% strength)",
@@ -113,7 +146,11 @@ public class FireConfig
             "ignoreRain=false",
             "maxReplaceBlockWithFireChance=80",
             "minReplaceBlockWithFireChance=50",
+            "reachAbove=4",
+            "reachBelow=1",
+            "reachHorizontal=1",
             "spreadStrengthNatural=-1",
+            "spreadStrengthWhenDestroying=-1",
             "",
             "",
             "",
@@ -128,6 +165,11 @@ public class FireConfig
             "ignoreRain=false",
             "maxReplaceBlockWithFireChance=80",
             "minReplaceBlockWithFireChance=50",
+            "reachAbove=4",
+            "reachBelow=1",
+            "reachHorizontal=1",
+            "spreadStrengthNatural=-1",
+            "spreadStrengthWhenDestroying=-1",
             "",
             "",
             "",
@@ -141,6 +183,11 @@ public class FireConfig
             "ignoreRain=false",
             "maxReplaceBlockWithFireChance=80",
             "minReplaceBlockWithFireChance=50",
+            "reachAbove=4",
+            "reachBelow=1",
+            "reachHorizontal=1",
+            "spreadStrengthNatural=-1",
+            "spreadStrengthWhenDestroying=-1",
             "",
             "",
             "",
@@ -154,6 +201,11 @@ public class FireConfig
             "ignoreRain=false",
             "maxReplaceBlockWithFireChance=100",
             "minReplaceBlockWithFireChance=100",
+            "reachAbove=4",
+            "reachBelow=1",
+            "reachHorizontal=1",
+            "spreadStrengthNatural=-1",
+            "spreadStrengthWhenDestroying=-1",
             "",
             "",
             "",

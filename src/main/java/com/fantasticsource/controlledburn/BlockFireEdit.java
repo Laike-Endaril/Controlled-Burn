@@ -108,11 +108,11 @@ public class BlockFireEdit extends BlockFire
         //Try to spread naturally
         if (fireSpreadSpeedMultiplier > 0)
         {
-            for (int trySpreadX = -1; trySpreadX <= 1; ++trySpreadX)
+            for (int trySpreadX = -reachHorizontal; trySpreadX <= reachHorizontal; ++trySpreadX)
             {
-                for (int trySpreadZ = -1; trySpreadZ <= 1; ++trySpreadZ)
+                for (int trySpreadZ = -reachHorizontal; trySpreadZ <= reachHorizontal; ++trySpreadZ)
                 {
-                    for (int trySpreadY = -1; trySpreadY <= 4; ++trySpreadY)
+                    for (int trySpreadY = -reachBelow; trySpreadY <= reachAbove; ++trySpreadY)
                     {
                         if (trySpreadX != 0 || trySpreadY != 0 || trySpreadZ != 0)
                         {
