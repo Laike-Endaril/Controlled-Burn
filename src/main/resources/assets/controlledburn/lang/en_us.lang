@@ -1,0 +1,25 @@
+controlledburn.config.globalMultipliers=Global Multipliers
+controlledburn.config.specialToggles=Special Toggles
+controlledburn.config.burnSpreadChances=Burn Spread Chances
+controlledburn.config.spreadRanges=Fire Spread Ranges / Reach
+controlledburn.config.spreadStrengths=Spread Strengths (Advanced)
+controlledburn.config.blockSpecific=Block-Specific Settings (Advanced)
+
+controlledburn.config.burnSpeedMultiplier=Burn Speed Multiplier
+controlledburn.config.spreadSpeedMultiplier=Spread Speed Multiplier
+controlledburn.config.tickDelay=Tick Delay
+
+controlledburn.config.ignoreHumid=Ignore Humid Biomes
+controlledburn.config.ignoreRain=Ignore Rain
+controlledburn.config.lavaFire=Disable Fires From Lava
+controlledburn.config.lightningFire=Disable Fires From Lightning
+
+controlledburn.config.maxBurnSpreadChance=Max Burn Spread Chance
+controlledburn.config.minBurnSpreadChance=Min Burn Spread Chance
+
+controlledburn.config.reachUp=Reach (Upwards)
+controlledburn.config.reachDown=Reach (Downwards)
+controlledburn.config.reachSide=Reach (Sideways)
+
+controlledburn.config.burnSpreadStrength=Spread Strength (Block Destroyed)
+controlledburn.config.naturalSpreadStrength=Spread Strength (Natural Spread)
