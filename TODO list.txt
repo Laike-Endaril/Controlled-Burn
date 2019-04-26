@@ -1,2 +1,1 @@
-
----
+Add config to define what blocks "burn" into; eg. instead of turning to air, grass blocks could turn into dirt
