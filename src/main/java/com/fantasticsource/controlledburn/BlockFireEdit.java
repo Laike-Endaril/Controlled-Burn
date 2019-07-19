@@ -20,6 +20,17 @@ import static com.fantasticsource.controlledburn.FireConfig.*;
 
 public class BlockFireEdit extends BlockFire
 {
+    private static boolean tryBurnBlockSpecial(World world, BlockPos pos)
+    {
+        Block blockTo = FireData.blockTransformationMap.get(world.getBlockState(pos).getBlock());
+        if (blockTo != null)
+        {
+            world.setBlockState(pos, blockTo.getDefaultState());
+            return true;
+        }
+        else return false;
+    }
+
     public int tickRate(World worldIn)
     {
         return globalMultipliers.tickDelay;
@@ -200,40 +211,43 @@ public class BlockFireEdit extends BlockFire
             if (ControlledBurn.fireAgeRange() == 0) replaceBlockWithFireChance = burnSpreadChances.minBurnSpreadChance + ControlledBurn.replaceBlockWithFireChanceRange / 2;
             else replaceBlockWithFireChance = (int) (burnSpreadChances.minBurnSpreadChance + ControlledBurn.replaceBlockWithFireChanceRange * (float) age / ControlledBurn.fireAgeRange());
 
-            if (random.nextInt(100) < replaceBlockWithFireChance && (!worldIn.isRainingAt(pos) || specialToggles.ignoreRain))
+            if (!tryBurnBlockSpecial(worldIn, pos))
             {
-                //Replace destroyed (burnt) block with new fire block
-
-                if (spreadStrengths.burnSpreadStrength == -1)
+                if (random.nextInt(100) < replaceBlockWithFireChance && (!worldIn.isRainingAt(pos) || specialToggles.ignoreRain))
                 {
-                    if (age < ControlledBurn.maxFireAge()) //If source fire block's age is less than max...
-                    {
-                        //...75% chance to set child's age to source's age, and 25% to set it 1 higher
-                        worldIn.setBlockState(pos, getDefaultState().withProperty(AGE, (random.nextInt(5) == 4 ? age + 1 : age)), 3);
-                    }
-                    else
-                    {
-                        //Otherwise, set child's age to source's age (which is also max age in this case)
-                        worldIn.setBlockState(pos, getDefaultState().withProperty(AGE, age), 3);
-                    }
-                }
-                else if (spreadStrengths.burnSpreadStrength != 0)
-                {
-                    int childAge = ControlledBurn.maxFireAge() - (ControlledBurn.maxFireAge() - age) * spreadStrengths.burnSpreadStrength / 100;
+                    //Replace destroyed (burnt) block with new fire block
 
-                    if (childAge < ControlledBurn.maxFireAge()) worldIn.setBlockState(pos, getDefaultState().withProperty(AGE, childAge), 3);
-                    else
+                    if (spreadStrengths.burnSpreadStrength == -1)
                     {
-                        if (spreadStrengths.burnSpreadStrength != 100) worldIn.setBlockToAir(pos);
-                        else worldIn.setBlockState(pos, getDefaultState().withProperty(AGE, age), 3);
+                        if (age < ControlledBurn.maxFireAge()) //If source fire block's age is less than max...
+                        {
+                            //...75% chance to set child's age to source's age, and 25% to set it 1 higher
+                            worldIn.setBlockState(pos, getDefaultState().withProperty(AGE, (random.nextInt(5) == 4 ? age + 1 : age)), 3);
+                        }
+                        else
+                        {
+                            //Otherwise, set child's age to source's age (which is also max age in this case)
+                            worldIn.setBlockState(pos, getDefaultState().withProperty(AGE, age), 3);
+                        }
                     }
+                    else if (spreadStrengths.burnSpreadStrength != 0)
+                    {
+                        int childAge = ControlledBurn.maxFireAge() - (ControlledBurn.maxFireAge() - age) * spreadStrengths.burnSpreadStrength / 100;
+
+                        if (childAge < ControlledBurn.maxFireAge()) worldIn.setBlockState(pos, getDefaultState().withProperty(AGE, childAge), 3);
+                        else
+                        {
+                            if (spreadStrengths.burnSpreadStrength != 100) worldIn.setBlockToAir(pos);
+                            else worldIn.setBlockState(pos, getDefaultState().withProperty(AGE, age), 3);
+                        }
+                    }
+                    else worldIn.setBlockToAir(pos);
                 }
-                else worldIn.setBlockToAir(pos);
-            }
-            else
-            {
-                //Replace destroyed (burnt) block with air block
-                worldIn.setBlockToAir(pos);
+                else
+                {
+                    //Replace destroyed (burnt) block with air block
+                    worldIn.setBlockToAir(pos);
+                }
             }
 
             if (iblockstate.getBlock() == Blocks.TNT)

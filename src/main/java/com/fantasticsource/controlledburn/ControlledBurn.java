@@ -58,19 +58,13 @@ public class ControlledBurn
     @SubscribeEvent
     public static void saveConfig(ConfigChangedEvent.OnConfigChangedEvent event)
     {
-        if (event.getModID().equals(MODID))
-        {
-            ConfigManager.sync(MODID, Config.Type.INSTANCE);
-        }
+        if (event.getModID().equals(MODID)) ConfigManager.sync(MODID, Config.Type.INSTANCE);
     }
 
     @SubscribeEvent
     public static void calcConfigs(ConfigChangedEvent.PostConfigChangedEvent event)
     {
-        if (event.getModID().equals(MODID))
-        {
-            FireData.update();
-        }
+        if (event.getModID().equals(MODID)) FireData.update();
     }
 
     @SubscribeEvent

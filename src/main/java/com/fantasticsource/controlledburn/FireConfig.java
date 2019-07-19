@@ -52,6 +52,17 @@ public class FireConfig
     })
     public static String[] blockSettings = {};
 
+    @Config.Name("Block Transformations")
+    @Config.LangKey(ControlledBurn.MODID + ".config.blockTransformations")
+    @Comment({
+            "This allows you to set what a block will become when it burns",
+            "Eg. you can make grass blocks turn to dirt by using this setting:",
+            "minecraft:grass, minecraft:dirt",
+            "",
+            "Keep in mind that this won't do anything unless you make sure the first block is actually flammable (and maybe give it encouragement too, depending; see the MC wiki for more info on those stats)"
+    })
+    public static String[] blockTransformations = {};
+
     public static class GlobalMultipliers
     {
         @Config.Name("Burn Speed Multiplier")

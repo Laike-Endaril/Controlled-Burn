@@ -10,6 +10,8 @@ controlledburn.config.spreadStrengths=Spread Strengths (Advanced)
 controlledburn.config.spreadStrengths.tooltip=How much "life" new fires have when spreading\n \n
 controlledburn.config.blockSpecific=Block-Specific Settings (Advanced)
 controlledburn.config.blockSpecific.tooltip=This allows you to set a custom BASE flammability and encouragement for any given block\n\nThe EFFECTIVE stats of the block will be these values times their respective multipliers\n\nFlammability is how fast/easily the block is destroyed by fire\n\nEncouragement is how fast/easily fire spreads to the block\n\nThe equals symbol can be used to leave a base stat as-is (eg, if you only want to change one stat)\n\nSyntax is [blockID, flammability, encouragement]. Examples below\nminecraft:grass, 5, 5\nminecraft:dirt, =, 5\n \n
+controlledburn.config.blockTransformations=Block Transformations
+controlledburn.config.blockTransformations.tooltip=This allows you to set what a block will become when it burns\nEg. you can make grass blocks turn to dirt by using this setting:\nminecraft:grass, minecraft:dirt\n\nKeep in mind that this won't do anything unless you make sure the first block is actually flammable (and maybe give it encouragement too, depending; see the MC wiki for more info on those stats)\n \n
 
 controlledburn.config.burnSpeedMultiplier=Burn Speed Multiplier
 controlledburn.config.burnSpeedMultiplier.tooltip=How fast blocks are destroyed (burnt) when 'on fire', as a multiplier (2 means twice as fast, 0.5 means half as fast)\n\nAKA flammability multiplier\n\nSet this to 0 to make it so fire doesn't break (burn) blocks at all (but can still be lit)\n \n
