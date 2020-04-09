@@ -5,8 +5,8 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
-import net.minecraftforge.registries.IForgeRegistry;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 import static com.fantasticsource.controlledburn.FireConfig.*;
@@ -36,7 +36,7 @@ public class FireData
 
                 if (!ForgeRegistries.BLOCKS.containsKey(resourceLocation))
                 {
-                    System.err.println("Could not find block: " + token);
+                    System.err.println("Block not found: " + token);
                 }
                 else
                 {
@@ -64,9 +64,6 @@ public class FireData
 
 
         blockTransformationMap.clear();
-        IBlockState blockStateFrom, blockStateTo;
-        IForgeRegistry<Block> blocks = ForgeRegistries.BLOCKS;
-        ResourceLocation rl;
         for (String s : blockTransformations)
         {
             String[] tokens = s.split(",");
@@ -76,119 +73,115 @@ public class FireData
                 continue;
             }
 
-            String domain1 = "minecraft", name1;
-            int meta1 = 0;
-            String[] tokens1 = tokens[0].trim().split(":");
-            switch (tokens1.length)
+            ArrayList<IBlockState> fromStates = blockstatesMatching(tokens[0]);
+            ArrayList<IBlockState> toStates = blockstatesMatching(tokens[1]);
+            if (fromStates == null || toStates == null || fromStates.size() == 0 || toStates.size() == 0)
             {
-                case 1:
-                    name1 = tokens1[0].trim();
-                    break;
-
-                case 2:
-                    try
-                    {
-                        meta1 = Integer.parseInt(tokens1[1].trim());
-                        name1 = tokens1[0].trim();
-                    }
-                    catch (NumberFormatException e2)
-                    {
-                        domain1 = tokens1[0].trim();
-                        name1 = tokens1[1].trim();
-                    }
-                    break;
-
-                case 3:
-                    domain1 = tokens1[0].trim();
-                    name1 = tokens1[1].trim();
-                    try
-                    {
-                        meta1 = Integer.parseInt(tokens1[2].trim());
-                    }
-                    catch (NumberFormatException e2)
-                    {
-                        System.err.println("Invalid blockstate entry: " + tokens[0]);
-                        return;
-                    }
-                    break;
-
-                default:
-                    System.err.println("Invalid blockstate entry: " + tokens[0]);
-                    return;
-            }
-            rl = new ResourceLocation(domain1, name1);
-            if (!blocks.containsKey(rl))
-            {
-                System.err.println("Block not found: " + tokens[0].trim());
+                System.err.println("Invalid block transformation entry: " + s);
                 continue;
             }
-            try
-            {
-                blockStateFrom = blocks.getValue(rl).getStateFromMeta(meta1);
-            }
-            catch (Exception e3)
-            {
-                System.err.println("Bad meta for blockstate: " + tokens[0]);
-                throw e3;
-            }
 
-            String domain2 = "minecraft", name2;
-            int meta2 = 0;
-            String[] tokens2 = tokens[1].trim().split(":");
-            switch (tokens2.length)
+            if (toStates.size() == 1)
             {
-                case 1:
-                    name2 = tokens2[0].trim();
-                    break;
-
-                case 2:
-                    try
-                    {
-                        meta2 = Integer.parseInt(tokens2[1].trim());
-                        name2 = tokens2[0].trim();
-                    }
-                    catch (NumberFormatException e2)
-                    {
-                        domain2 = tokens2[0].trim();
-                        name2 = tokens2[1].trim();
-                    }
-                    break;
-
-                case 3:
-                    domain2 = tokens2[0].trim();
-                    name2 = tokens2[1].trim();
-                    try
-                    {
-                        meta2 = Integer.parseInt(tokens2[2].trim());
-                    }
-                    catch (NumberFormatException e2)
-                    {
-                        System.err.println("Invalid blockstate entry: " + tokens[1]);
-                        return;
-                    }
-                    break;
-
-                default:
-                    System.err.println("Invalid blockstate entry: " + tokens[1]);
-                    return;
+                for (IBlockState state : fromStates)
+                {
+                    blockTransformationMap.put(state, toStates.get(0));
+                }
             }
-            rl = new ResourceLocation(domain2, name2);
-            if (!blocks.containsKey(rl))
+            else if (fromStates.size() == toStates.size())
             {
-                System.err.println("Block not found: " + tokens[1].trim());
-                continue;
+                for (int i = 0; i < fromStates.size(); i++)
+                {
+                    blockTransformationMap.put(fromStates.get(i), toStates.get(i));
+                }
             }
-            try
+            else
             {
-                blockStateTo = blocks.getValue(rl).getStateFromMeta(meta2);
+                for (IBlockState state : fromStates)
+                {
+                    blockTransformationMap.put(state, toStates.get(0));
+                }
             }
-            catch (Exception e3)
-            {
-                System.err.println("Bad meta for blockstate: " + tokens[1]);
-                throw e3;
-            }
-
-            blockTransformationMap.put(blockStateFrom, blockStateTo);
         }
+    }
+
+
+    protected static ArrayList<IBlockState> blockstatesMatching(String blockID)
+    {
+        ArrayList<IBlockState> result = new ArrayList<>();
+
+        String[] tokens = blockID.split(":");
+        String domain = "minecraft", name, meta = "*";
+        switch (tokens.length)
+        {
+            case 1:
+                name = tokens[0].trim();
+                break;
+
+
+            case 2:
+                if (tokens[1].trim().equals("*"))
+                {
+                    name = tokens[0].trim();
+                    break;
+                }
+
+                try
+                {
+                    meta = "" + Integer.parseInt(tokens[1].trim());
+                    name = tokens[0].trim();
+                }
+                catch (NumberFormatException e)
+                {
+                    domain = tokens[0].trim();
+                    name = tokens[1].trim();
+                }
+                break;
+
+
+            case 3:
+                domain = tokens[0].trim();
+                name = tokens[1].trim();
+                meta = tokens[2].trim();
+                break;
+
+
+            default:
+                System.err.println("Invalid blockstate entry: " + tokens[1]);
+                return null;
+        }
+
+
+        ResourceLocation rl = new ResourceLocation(domain, name);
+        if (!ForgeRegistries.BLOCKS.containsKey(rl))
+        {
+            System.err.println("Block not found: " + rl);
+            return null;
+        }
+
+        Block block = ForgeRegistries.BLOCKS.getValue(rl);
+        if (block == null)
+        {
+            System.err.println("Block was null: " + rl);
+            return null;
+        }
+
+
+        int i;
+        try
+        {
+            i = Integer.parseInt(meta);
+            result.add(block.getStateFromMeta(i));
+        }
+        catch (NumberFormatException e)
+        {
+            for (i = 0; i < 16; i++)
+            {
+                IBlockState state = block.getStateFromMeta(i);
+                if (!result.contains(state)) result.add(state);
+            }
+        }
+
+        return result;
     }
 }
