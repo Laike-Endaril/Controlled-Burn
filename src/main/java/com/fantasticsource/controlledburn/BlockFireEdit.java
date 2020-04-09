@@ -22,10 +22,10 @@ public class BlockFireEdit extends BlockFire
 {
     private static boolean tryBurnBlockSpecial(World world, BlockPos pos)
     {
-        Block blockTo = FireData.blockTransformationMap.get(world.getBlockState(pos).getBlock());
+        IBlockState blockTo = FireData.blockTransformationMap.get(world.getBlockState(pos));
         if (blockTo != null)
         {
-            world.setBlockState(pos, blockTo.getDefaultState());
+            world.setBlockState(pos, blockTo);
             return true;
         }
         else return false;
