@@ -171,13 +171,29 @@ public class FireData
         try
         {
             i = Integer.parseInt(meta);
-            result.add(block.getStateFromMeta(i));
+            IBlockState state;
+            try
+            {
+                state = block.getStateFromMeta(i);
+                result.add(state);
+            }
+            catch (Exception e2)
+            {
+            }
         }
         catch (NumberFormatException e)
         {
             for (i = 0; i < 16; i++)
             {
-                IBlockState state = block.getStateFromMeta(i);
+                IBlockState state;
+                try
+                {
+                    state = block.getStateFromMeta(i);
+                }
+                catch (Exception e2)
+                {
+                    continue;
+                }
                 if (!result.contains(state)) result.add(state);
             }
         }
