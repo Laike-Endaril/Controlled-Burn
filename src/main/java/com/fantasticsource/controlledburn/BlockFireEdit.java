@@ -53,16 +53,16 @@ public class BlockFireEdit extends BlockFire
         //Check for rain extinguishing
         boolean fireSourceBelow = worldIn.getBlockState(pos.down()).getBlock().isFireSource(worldIn, pos.down(), EnumFacing.UP);
         int age = state.getValue(AGE);
-        if (!fireSourceBelow && (!specialToggles.ignoreRain && worldIn.isRaining() && canDie(worldIn, pos)) && rand.nextFloat() < 0.2F + (float) age * 0.03F)
+        if (!fireSourceBelow && !specialToggles.ignoreRain && worldIn.isRaining() && canDie(worldIn, pos) && rand.nextFloat() < 0.2F + (float) age * 0.03F)
         {
             worldIn.setBlockToAir(pos); //Extinguished by rain
             return;
         }
 
-        //Fire age increase (sometimes)
-        if (age < ControlledBurn.maxFireAge())
+        //33% chance to add 1 to fire age
+        if (age < ControlledBurn.maxFireAge() && rand.nextInt(3) == 2)
         {
-            state = state.withProperty(AGE, (rand.nextInt(3) == 2 ? ++age : age)); //33% chance to add 1 to fire age
+            state = state.withProperty(AGE, (++age));
             worldIn.setBlockState(pos, state, 4); //Flag 4 prevents block from re-rendering if client side
         }
 
@@ -77,7 +77,7 @@ public class BlockFireEdit extends BlockFire
                 }
                 else
                 {
-                    worldIn.scheduleUpdate(pos, this, tickRate(worldIn) + rand.nextInt(10));
+                    worldIn.scheduleUpdate(pos, this, tickRate(worldIn) + rand.nextInt(FireConfig.globalMultipliers.tickDelayRandomization + 1));
                 }
 
                 return;
@@ -157,7 +157,7 @@ public class BlockFireEdit extends BlockFire
             }
         }
 
-        worldIn.scheduleUpdate(pos, this, tickRate(worldIn) + rand.nextInt(10));
+        worldIn.scheduleUpdate(pos, this, tickRate(worldIn) + rand.nextInt(FireConfig.globalMultipliers.tickDelayRandomization + 1));
     }
 
     @Override

@@ -96,6 +96,16 @@ public class FireConfig
         })
         @Config.RangeInt(min = 1)
         public int tickDelay = 30;
+
+        @Config.Name("Tick Delay Randomization")
+        @Config.LangKey(ControlledBurn.MODID + ".config.tickDelayRandomization")
+        @Comment({
+                "By default, MC adds 0-9 ticks to each tick delay",
+                "",
+                "The lower you set this, the faster fire works (in every way), and the less random it works, time-wise"
+        })
+        @Config.RangeInt(min = 0)
+        public int tickDelayRandomization = 9;
     }
 
     public static class SpecialToggles
