@@ -50,6 +50,7 @@ public class FireConfig
             "minecraft:grass, 5, 5",
             "minecraft:dirt, =, 5"
     })
+    @Config.RequiresMcRestart
     public static String[] blockSettings = {};
 
     @Config.Name("Block Transformations")

@@ -28,14 +28,14 @@ public class ControlledBurn
     public static final String MODID = "controlledburn";
     public static final String NAME = "Controlled Burn";
     public static final String VERSION = "1.12.2.020";
+
     public static int replaceBlockWithFireChanceRange;
-    public static BlockFire oldFire;
+    public static final BlockFire OLD_FIRE = Blocks.FIRE;
 
 
     public ControlledBurn()
     {
         MinecraftForge.EVENT_BUS.register(ControlledBurn.class);
-        oldFire = Blocks.FIRE;
     }
 
     public static int minFireAge()
@@ -109,9 +109,9 @@ public class ControlledBurn
         //Copy fire-related stats for vanilla blocks
         for (Block b : ForgeRegistries.BLOCKS.getValues())
         {
-            if (oldFire.getEncouragement(b) != 0 && b != Blocks.AIR)
+            if (OLD_FIRE.getEncouragement(b) != 0 && b != Blocks.AIR)
             {
-                Blocks.FIRE.setFireInfo(b, oldFire.getEncouragement(b), oldFire.getFlammability(b));
+                Blocks.FIRE.setFireInfo(b, OLD_FIRE.getEncouragement(b), OLD_FIRE.getFlammability(b));
             }
         }
     }
