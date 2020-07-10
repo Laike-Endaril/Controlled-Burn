@@ -60,7 +60,7 @@ public class BlockFireEdit extends BlockFire
         }
 
         //33% chance to add 1 to fire age
-        if (age < ControlledBurn.maxFireAge() && rand.nextInt(3) == 2)
+        if (age < ControlledBurn.maxFireAge() && rand.nextInt(3) == 0)
         {
             state = state.withProperty(AGE, (++age));
             worldIn.setBlockState(pos, state, 4); //Flag 4 prevents block from re-rendering if client side
@@ -125,7 +125,7 @@ public class BlockFireEdit extends BlockFire
 
                                 if (feelsHumid)
                                 {
-                                    spreadStrength /= 2;
+                                    spreadStrength >>>= 1;
                                 }
 
                                 int spreadDifficulty = (trySpreadY > 1 ? 100 + (trySpreadY - 1) * 100 : 100);
