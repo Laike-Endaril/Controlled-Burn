@@ -51,7 +51,7 @@ public class BlockFireEdit extends BlockFire
         }
 
         //Check for rain extinguishing
-        boolean fireSourceBelow = worldIn.getBlockState(pos.down()).getBlock().isFireSource(worldIn, pos.down(), EnumFacing.UP);
+        boolean fireSourceBelow = getFlammability(worldIn.getBlockState(pos.down()).getBlock()) < 0 || worldIn.getBlockState(pos.down()).getBlock().isFireSource(worldIn, pos.down(), EnumFacing.UP);
         int age = state.getValue(AGE);
         if (!fireSourceBelow && !specialToggles.ignoreRain && worldIn.isRaining() && canDie(worldIn, pos) && rand.nextFloat() < 0.2F + (float) age * 0.03F)
         {
@@ -187,7 +187,7 @@ public class BlockFireEdit extends BlockFire
         if (globalMultipliers.burnSpeedMultiplier == 0)
         {
             if (baseFlammability > 0) return 1;
-            if (baseFlammability < 0) return -1; //Not sure why this would be a thing, but here's your compatibility
+            if (baseFlammability < 0) return -1;
             return 0;
         }
 

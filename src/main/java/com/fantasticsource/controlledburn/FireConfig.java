@@ -46,6 +46,8 @@ public class FireConfig
             "",
             "The equals symbol can be used to leave a base stat as-is (eg, if you only want to change one stat)",
             "",
+            "Setting flammability to a negative value makes a block behave like netherrack (as far as fire goes)",
+            "",
             "Syntax is [blockID, flammability, encouragement]. Examples below",
             "minecraft:grass, 5, 5",
             "minecraft:dirt, =, 5"
