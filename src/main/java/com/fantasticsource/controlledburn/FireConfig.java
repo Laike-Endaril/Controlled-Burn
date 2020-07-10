@@ -103,7 +103,7 @@ public class FireConfig
         @Comment({
                 "By default, MC adds 0-9 ticks to each tick delay",
                 "",
-                "The lower you set this, the faster fire works (in every way), and the less random it works, time-wise"
+                "The lower you set this, the faster fire works (in every way), and the less random it works, time-wise (but not to any noticeable degree for the latter)"
         })
         @Config.RangeInt(min = 0)
         public int tickDelayRandomization = 9;
