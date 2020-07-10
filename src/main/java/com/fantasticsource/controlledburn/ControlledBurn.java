@@ -1,5 +1,6 @@
 package com.fantasticsource.controlledburn;
 
+import com.fantasticsource.tools.ReflectionTool;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFire;
 import net.minecraft.init.Blocks;
@@ -14,10 +15,7 @@ import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.Objects;
 
 import static com.fantasticsource.controlledburn.FireConfig.specialToggles;
@@ -83,28 +81,8 @@ public class ControlledBurn
 
         event.getRegistry().register(newFire);
 
-        Field f;
-        try
-        {
-            f = ReflectionHelper.findField(Blocks.class, "field_150480_ab");
-        }
-        catch (ReflectionHelper.UnableToFindFieldException e)
-        {
-            f = ReflectionHelper.findField(Blocks.class, "FIRE");
-        }
-
-        try
-        {
-            Field modifiersField = Field.class.getDeclaredField("modifiers");
-            modifiersField.setAccessible(true);
-            modifiersField.setInt(f, f.getModifiers() & ~Modifier.FINAL);
-
-            f.set(null, newFire);
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
+        //Override static reference
+        ReflectionTool.set(Blocks.class, new String[]{"field_150480_ab", "FIRE"}, null, newFire);
 
         //Copy fire-related stats for vanilla blocks
         for (Block b : ForgeRegistries.BLOCKS.getValues())
