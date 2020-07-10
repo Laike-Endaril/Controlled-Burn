@@ -1,5 +1,6 @@
 package com.fantasticsource.controlledburn;
 
+import com.fantasticsource.mctools.ImprovedRayTracing;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFire;
 import net.minecraft.block.BlockTNT;
@@ -10,6 +11,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -117,6 +119,13 @@ public class BlockFireEdit extends BlockFire
                         if (trySpreadX != 0 || trySpreadY != 0 || trySpreadZ != 0)
                         {
                             BlockPos spreadPos = pos.add(trySpreadX, trySpreadY, trySpreadZ);
+
+                            if (FireConfig.specialToggles.losFireSpread)
+                            {
+                                BlockPos[] raycastBlockPositions = ImprovedRayTracing.blocksInRay(worldIn, new Vec3d(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5), new Vec3d(spreadPos.getX() + 0.5, spreadPos.getY() + 0.5, spreadPos.getZ() + 0.5), true);
+                                if (raycastBlockPositions.length == 0 || !raycastBlockPositions[raycastBlockPositions.length - 1].equals(spreadPos)) continue;
+                            }
+
                             int adjacentEncouragement = getNeighborEncouragement(worldIn, spreadPos);
 
                             if (adjacentEncouragement > 0)

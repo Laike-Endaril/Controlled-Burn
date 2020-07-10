@@ -30,6 +30,8 @@ controlledburn.config.lavaFire=Disable Fires From Lava
 controlledburn.config.lavaFire.tooltip=Whether fire spreading from lava is disabled\n \n
 controlledburn.config.lightningFire=Disable Fires From Lightning
 controlledburn.config.lightningFire.tooltip=Whether fire spreading from lightning is disabled\n \n
+controlledburn.config.losFireSpread=LOS-Only Fire Spread
+controlledburn.config.losFireSpread.tooltip=Whether fire requires line-of-sight to spread to a new location\n \n
 
 controlledburn.config.maxBurnSpreadChance=Max Burn Spread Chance
 controlledburn.config.maxBurnSpreadChance.tooltip=When a fire at the MAXIMUM age (15 in vanilla) destroys (burns through) a block, the chance that the broken (burnt) block is replaced with fire\n\nDoes nothing if fire never destroys blocks, eg. if dontDestroyBlocks is set to true\n\nUses a full-number percentage (25 means 25% chance, 75 means 75% chance)\n \n

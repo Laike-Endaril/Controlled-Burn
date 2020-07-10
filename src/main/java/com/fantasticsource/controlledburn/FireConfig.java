@@ -140,6 +140,11 @@ public class FireConfig
         @Config.LangKey(ControlledBurn.MODID + ".config.lightningFire")
         @Comment({"Whether fire spreading from lightning is disabled"})
         public boolean noLightningFire = false;
+
+        @Config.Name("LOS-Only Fire Spread")
+        @Config.LangKey(ControlledBurn.MODID + ".config.losFireSpread")
+        @Comment({"Whether fire requires line-of-sight to spread to a new location"})
+        public boolean losFireSpread = false;
     }
 
     public static class BurnSpreadChances

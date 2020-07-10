@@ -22,7 +22,7 @@ import java.util.Objects;
 
 import static com.fantasticsource.controlledburn.FireConfig.specialToggles;
 
-@Mod(modid = ControlledBurn.MODID, name = ControlledBurn.NAME, version = ControlledBurn.VERSION, acceptableRemoteVersions = "*")
+@Mod(modid = ControlledBurn.MODID, name = ControlledBurn.NAME, version = ControlledBurn.VERSION, dependencies = "required-after:fantasticlib@[1.12.2.035,)", acceptableRemoteVersions = "*")
 public class ControlledBurn
 {
     public static final String MODID = "controlledburn";
