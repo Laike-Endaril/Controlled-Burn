@@ -3,10 +3,13 @@ package com.fantasticsource.controlledburn;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.oredict.OreDictionary;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 
 import static com.fantasticsource.controlledburn.FireConfig.*;
@@ -21,42 +24,36 @@ public class FireData
         replaceBlockWithFireChanceRange = burnSpreadChances.maxBurnSpreadChance - burnSpreadChances.minBurnSpreadChance;
 
 
-        ResourceLocation resourceLocation;
-        Block b;
+        HashSet<Block> blocks;
         String token;
-        int f, e;
+        int flammability = 0, encouragement = 0;
+        boolean sameFlammability = false, sameEncouragement = false;
+
         for (String string : blockSettings)
         {
             String[] tokens = string.split(",");
             if (tokens.length != 3) System.err.println("Wrong number of arguments for block-specific setting; please check example in tooltip");
             else
             {
-                token = tokens[0].trim();
-                resourceLocation = new ResourceLocation(token);
+                blocks = blocksMatching(tokens[0].trim());
 
-                if (!ForgeRegistries.BLOCKS.containsKey(resourceLocation))
+                if (blocks.size() == 0)
                 {
-                    System.err.println("Block not found: " + token);
+                    System.err.println("Block(s) not found: " + tokens[0].trim());
                 }
                 else
                 {
-                    b = ForgeRegistries.BLOCKS.getValue(resourceLocation);
+                    token = tokens[1].trim();
+                    if (token.equals("=")) sameFlammability = true;
+                    else flammability = Integer.parseInt(token);
 
-                    if (b == null)
+                    token = tokens[2].trim();
+                    if (token.equals("=")) sameEncouragement = true;
+                    else encouragement = Integer.parseInt(token);
+
+                    for (Block b : blocks)
                     {
-                        System.err.println("Block was found, but was null (this should never happen): " + token);
-                    }
-                    else
-                    {
-                        token = tokens[1].trim();
-                        if (token.equals("=")) f = Blocks.FIRE.getFlammability(b);
-                        else f = Integer.parseInt(token);
-
-                        token = tokens[2].trim();
-                        if (token.equals("=")) e = Blocks.FIRE.getEncouragement(b);
-                        else e = Integer.parseInt(token);
-
-                        Blocks.FIRE.setFireInfo(b, e, f);
+                        Blocks.FIRE.setFireInfo(b, sameEncouragement ? ControlledBurn.OLD_FIRE.getEncouragement(b) : encouragement, sameFlammability ? ControlledBurn.OLD_FIRE.getFlammability(b) : flammability);
                     }
                 }
             }
@@ -81,14 +78,7 @@ public class FireData
                 continue;
             }
 
-            if (toStates.size() == 1)
-            {
-                for (IBlockState state : fromStates)
-                {
-                    blockTransformationMap.put(state, toStates.get(0));
-                }
-            }
-            else if (fromStates.size() == toStates.size())
+            if (toStates.size() > 1 && fromStates.size() == toStates.size())
             {
                 for (int i = 0; i < fromStates.size(); i++)
                 {
@@ -105,6 +95,25 @@ public class FireData
         }
     }
 
+
+    protected static HashSet<Block> blocksMatching(String blockID)
+    {
+        HashSet<Block> blocks = new HashSet<>();
+
+        ResourceLocation resourceLocation = new ResourceLocation(blockID);
+        Block block = ForgeRegistries.BLOCKS.getValue(resourceLocation);
+        if (block != null && block != Blocks.AIR) blocks.add(block);
+        else if (blockID.contains("oredict:"))
+        {
+            for (ItemStack stack : OreDictionary.getOres(blockID.replace("oredict:", "")))
+            {
+                block = Block.getBlockFromItem(stack.getItem());
+                if (block != null && block != Blocks.AIR) blocks.add(block); //block CAN be null here
+            }
+        }
+
+        return blocks;
+    }
 
     protected static ArrayList<IBlockState> blockstatesMatching(String blockID)
     {
@@ -152,49 +161,49 @@ public class FireData
         }
 
 
-        ResourceLocation rl = new ResourceLocation(domain, name);
-        if (!ForgeRegistries.BLOCKS.containsKey(rl))
+        HashSet<Block> blocks;
+        if (domain.equals("oredict")) blocks = blocksMatching(domain + ":" + name);
+        else
         {
-            System.err.println("Block not found: " + rl);
-            return null;
-        }
+            Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(domain, name));
+            if (block == null || block == Blocks.AIR) return result;
 
-        Block block = ForgeRegistries.BLOCKS.getValue(rl);
-        if (block == null)
-        {
-            System.err.println("Block was null: " + rl);
-            return null;
+            blocks = new HashSet<>();
+            blocks.add(block);
         }
 
 
-        int i;
-        try
+        for (Block block : blocks)
         {
-            i = Integer.parseInt(meta);
-            IBlockState state;
+            int i;
             try
             {
-                state = block.getStateFromMeta(i);
-                result.add(state);
-            }
-            catch (Exception e2)
-            {
-            }
-        }
-        catch (NumberFormatException e)
-        {
-            for (i = 0; i < 16; i++)
-            {
+                i = Integer.parseInt(meta);
                 IBlockState state;
                 try
                 {
                     state = block.getStateFromMeta(i);
+                    result.add(state);
                 }
                 catch (Exception e2)
                 {
-                    continue;
                 }
-                if (!result.contains(state)) result.add(state);
+            }
+            catch (NumberFormatException e)
+            {
+                for (i = 0; i < 16; i++)
+                {
+                    IBlockState state;
+                    try
+                    {
+                        state = block.getStateFromMeta(i);
+                    }
+                    catch (Exception e2)
+                    {
+                        continue;
+                    }
+                    if (!result.contains(state)) result.add(state);
+                }
             }
         }
 

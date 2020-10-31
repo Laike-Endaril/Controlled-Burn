@@ -50,7 +50,8 @@ public class FireConfig
             "",
             "Syntax is [blockID, flammability, encouragement]. Examples below",
             "minecraft:grass, 5, 5",
-            "minecraft:dirt, =, 5"
+            "minecraft:dirt, =, 5",
+            "oredict:stone, 5, 5"
     })
     @Config.RequiresMcRestart
     public static String[] blockSettings = {};
@@ -61,6 +62,9 @@ public class FireConfig
             "This allows you to set what a block will become when it burns",
             "Eg. you can make grass blocks turn to dirt by using this setting:",
             "minecraft:grass, minecraft:dirt",
+            "",
+            "You can also use oredict:",
+            "oredict:logWood, coal_block",
             "",
             "Keep in mind that this won't do anything unless you make sure the first block is actually flammable (and maybe give it encouragement too, depending; see the MC wiki for more info on those stats)"
     })
