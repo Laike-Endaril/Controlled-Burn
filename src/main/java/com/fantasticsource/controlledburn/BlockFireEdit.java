@@ -86,9 +86,10 @@ public class BlockFireEdit extends BlockFire
             }
             //No fire source below, but a neighbor can catch fire
 
+            //25% chance to extinguish if age is maxed and block below isn't flammable
             if (!canCatchFire(worldIn, pos.down()) && age >= ControlledBurn.maxFireAge() && rand.nextInt(4) == 0)
             {
-                worldIn.setBlockToAir(pos); //25% chance to extinguish if age is maxed and block below isn't flammable
+                worldIn.setBlockToAir(pos);
                 return;
             }
         }
@@ -212,16 +213,15 @@ public class BlockFireEdit extends BlockFire
     private void tryBurnAdjacent(World worldIn, BlockPos pos, int chance, Random random, int age, EnumFacing face)
     {
         IBlockState iblockstate = worldIn.getBlockState(pos);
-
         if (random.nextInt(chance) < iblockstate.getBlock().getFlammability(worldIn, pos, face))
         {
-            //Destroy (burn) this adjacent block
-            int replaceBlockWithFireChance;
-            if (ControlledBurn.fireAgeRange() == 0) replaceBlockWithFireChance = burnSpreadChances.minBurnSpreadChance + ControlledBurn.replaceBlockWithFireChanceRange / 2;
-            else replaceBlockWithFireChance = (int) (burnSpreadChances.minBurnSpreadChance + ControlledBurn.replaceBlockWithFireChanceRange * (float) age / ControlledBurn.fireAgeRange());
-
+            //Destroy (burn) this adjacent block (adjacent to fire)
             if (!tryBurnBlockSpecial(worldIn, pos))
             {
+                int replaceBlockWithFireChance;
+                if (ControlledBurn.fireAgeRange() == 0) replaceBlockWithFireChance = burnSpreadChances.minBurnSpreadChance + ControlledBurn.replaceBlockWithFireChanceRange / 2;
+                else replaceBlockWithFireChance = (int) (burnSpreadChances.minBurnSpreadChance + ControlledBurn.replaceBlockWithFireChanceRange * (float) age / ControlledBurn.fireAgeRange());
+
                 if (random.nextInt(100) < replaceBlockWithFireChance && (!worldIn.isRainingAt(pos) || specialToggles.ignoreRain))
                 {
                     //Replace destroyed (burnt) block with new fire block
