@@ -1,2 +1,5 @@
+Add oredict support
+Add config for burn percentage when a fire burns out
+
 Add config that controls whether you can put out fire by punching it (probably requires editing of World class)
 Add config that controls how much damage you take by punching fire (probably requires editing of World class)
