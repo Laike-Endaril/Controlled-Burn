@@ -25,7 +25,7 @@ public class ControlledBurn
 {
     public static final String MODID = "controlledburn";
     public static final String NAME = "Controlled Burn";
-    public static final String VERSION = "1.12.2.021";
+    public static final String VERSION = "1.12.2.022";
 
     public static int replaceBlockWithFireChanceRange;
     public static final BlockFire OLD_FIRE = Blocks.FIRE;
