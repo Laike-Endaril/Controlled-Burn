@@ -99,4 +99,28 @@ public class ControlledBurn
     {
         FireData.update();
     }
+
+
+//    @SubscribeEvent
+//    public static void leftClickBlock(PlayerInteractEvent.LeftClickBlock event)
+//    {
+//        EntityPlayer player = event.getEntityPlayer();
+//        if (!(player instanceof EntityPlayerMP)) return;
+//
+//        EnumFacing facing = event.getFace();
+//        if (facing == null) return;
+//
+//        World world = event.getWorld();
+//        BlockPos pos = event.getPos(), firePos = pos.offset(facing);
+//        IBlockState fire = world.getBlockState(firePos);
+//        if (fire.getBlock() != Blocks.FIRE) return;
+//
+//
+//        //This line damages the player when they try to put out fire by hand
+//        player.attackEntityFrom(DamageSource.IN_FIRE, 1);
+//
+//        //These two lines can be used to prevent the block from breaking server-side, but I have not found a good way to sync this info to the client without making this a both-sides mod
+////        event.setCanceled(true);
+////        event.setResult(Event.Result.DENY);
+//    }
 }
