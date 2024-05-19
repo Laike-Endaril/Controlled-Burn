@@ -13,6 +13,7 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -213,7 +214,7 @@ public class BlockFireEdit extends BlockFire
     private void tryBurnAdjacent(World worldIn, BlockPos pos, int chance, Random random, int age, EnumFacing face)
     {
         IBlockState iblockstate = worldIn.getBlockState(pos);
-        if (random.nextInt(chance) < iblockstate.getBlock().getFlammability(worldIn, pos, face))
+        if (random.nextInt(chance) < iblockstate.getBlock().getFlammability(worldIn, pos, face) && !MinecraftForge.EVENT_BUS.post(new BurnBlockEvent(worldIn, pos, iblockstate)))
         {
             //Destroy (burn) this adjacent block (adjacent to fire)
             if (!tryBurnBlockSpecial(worldIn, pos))
@@ -225,7 +226,6 @@ public class BlockFireEdit extends BlockFire
                 if (random.nextInt(100) < replaceBlockWithFireChance && (!worldIn.isRainingAt(pos) || specialToggles.ignoreRain))
                 {
                     //Replace destroyed (burnt) block with new fire block
-
                     if (spreadStrengths.burnSpreadStrength == -1)
                     {
                         if (age < ControlledBurn.maxFireAge()) //If source fire block's age is less than max...
