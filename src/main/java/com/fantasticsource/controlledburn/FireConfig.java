@@ -70,6 +70,24 @@ public class FireConfig
     })
     public static String[] blockTransformations = {};
 
+
+    @Config.Name("Block Is Fire Source")
+    @Config.LangKey(ControlledBurn.MODID + ".config.fireSourceBlocks")
+    @Comment({
+            "Whether blocks keep fire on top of them lit, even in rain, like how netherrack works",
+            "",
+            "Syntax is [blockID, beFireSource]",
+            "",
+            "Examples below would remove all vanilla blocks that normally are, and add red nether brick instead",
+            "",
+            "minecraft:netherrack, false",
+            "minecraft:magma, false",
+            "minecraft:bedrock, false",
+            "minecraft:red_nether_brick, true"
+    })
+    public static String[] fireSourceBlocks = {};
+
+
     public static class GlobalMultipliers
     {
         @Config.Name("Burn Speed Multiplier")

@@ -18,6 +18,7 @@ public class FireData
 {
     public static int replaceBlockWithFireChanceRange;
     public static LinkedHashMap<IBlockState, IBlockState> blockTransformationMap = new LinkedHashMap<>();
+    public static LinkedHashMap<IBlockState, Boolean> fireSourceBlocks = new LinkedHashMap<>();
 
     public static void update()
     {
@@ -92,6 +93,27 @@ public class FireData
                     blockTransformationMap.put(state, toStates.get(0));
                 }
             }
+        }
+
+
+        fireSourceBlocks.clear();
+        for (String s : FireConfig.fireSourceBlocks)
+        {
+            String[] tokens = s.split(",");
+            if (tokens.length != 2)
+            {
+                System.err.println("Invalid fire source entry: " + s);
+                continue;
+            }
+
+            ArrayList<IBlockState> fromStates = blockstatesMatching(tokens[0]);
+            if (fromStates == null || fromStates.size() == 0)
+            {
+                System.err.println("Invalid fire source entry: " + s);
+                continue;
+            }
+
+            for (IBlockState state : fromStates) fireSourceBlocks.put(state, Boolean.parseBoolean(tokens[1].trim()));
         }
     }
 

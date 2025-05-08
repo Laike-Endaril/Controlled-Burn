@@ -57,7 +57,7 @@ public class BlockFireEdit extends BlockFire
         BlockPos below = pos.down();
         IBlockState stateBelow = worldIn.getBlockState(below);
         Block blockBelow = stateBelow.getBlock();
-        boolean fireSourceBelow = getFlammability(blockBelow) < 0 || blockBelow.isFireSource(worldIn, below, EnumFacing.UP);
+        boolean fireSourceBelow = getFlammability(blockBelow) < 0 || isFireSourceEdit(worldIn, below, blockBelow, stateBelow);
         int age = state.getValue(AGE);
 
         //Check for rain extinguishing
@@ -269,6 +269,15 @@ public class BlockFireEdit extends BlockFire
                 Blocks.TNT.onBlockDestroyedByPlayer(worldIn, pos, iblockstate.withProperty(BlockTNT.EXPLODE, true));
             }
         }
+    }
+
+    private boolean isFireSourceEdit(World world, BlockPos pos, Block block, IBlockState blockState)
+    {
+        Boolean result = FireData.fireSourceBlocks.get(blockState);
+        if (result != null) return result;
+
+
+        return block.isFireSource(world, pos, EnumFacing.UP);
     }
 
     private boolean canNeighborCatchFire(World worldIn, BlockPos pos)
