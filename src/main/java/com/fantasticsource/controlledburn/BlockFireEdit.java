@@ -53,9 +53,14 @@ public class BlockFireEdit extends BlockFire
             return;
         }
 
-        //Check for rain extinguishing
-        boolean fireSourceBelow = getFlammability(worldIn.getBlockState(pos.down()).getBlock()) < 0 || worldIn.getBlockState(pos.down()).getBlock().isFireSource(worldIn, pos.down(), EnumFacing.UP);
+
+        BlockPos below = pos.down();
+        IBlockState stateBelow = worldIn.getBlockState(below);
+        Block blockBelow = stateBelow.getBlock();
+        boolean fireSourceBelow = getFlammability(blockBelow) < 0 || blockBelow.isFireSource(worldIn, below, EnumFacing.UP);
         int age = state.getValue(AGE);
+
+        //Check for rain extinguishing
         if (!fireSourceBelow && !specialToggles.ignoreRain && worldIn.isRaining() && canDie(worldIn, pos) && rand.nextFloat() < 0.2F + (float) age * 0.03F)
         {
             worldIn.setBlockToAir(pos); //Extinguished by rain
@@ -74,7 +79,7 @@ public class BlockFireEdit extends BlockFire
         {
             if (!canNeighborCatchFire(worldIn, pos))
             {
-                if (!worldIn.getBlockState(pos.down()).isSideSolid(worldIn, pos.down(), EnumFacing.UP) || age > 3)
+                if (!stateBelow.isSideSolid(worldIn, below, EnumFacing.UP) || age > 3)
                 {
                     worldIn.setBlockToAir(pos); //Extinguish if no fire source below, nothing adjacent can catch fire, and (there is no solid block below OR age > 3)
                 }
@@ -88,7 +93,7 @@ public class BlockFireEdit extends BlockFire
             //No fire source below, but a neighbor can catch fire
 
             //25% chance to extinguish if age is maxed and block below isn't flammable
-            if (!canCatchFire(worldIn, pos.down()) && age >= ControlledBurn.maxFireAge() && rand.nextInt(4) == 0)
+            if (!canCatchFire(worldIn, below) && age >= ControlledBurn.maxFireAge() && rand.nextInt(4) == 0)
             {
                 worldIn.setBlockToAir(pos);
                 return;
@@ -101,7 +106,7 @@ public class BlockFireEdit extends BlockFire
         //Try to destroy (burn) adjacent blocks, possibly replacing them with more fire
         if (globalMultipliers.burnSpeedMultiplier != 0)
         {
-            tryBurnAdjacent(worldIn, pos.down(), 250 + humidModifier, rand, age, EnumFacing.UP);
+            tryBurnAdjacent(worldIn, below, 250 + humidModifier, rand, age, EnumFacing.UP);
             tryBurnAdjacent(worldIn, pos.up(), 250 + humidModifier, rand, age, EnumFacing.DOWN);
             tryBurnAdjacent(worldIn, pos.south(), 300 + humidModifier, rand, age, EnumFacing.NORTH);
             tryBurnAdjacent(worldIn, pos.north(), 300 + humidModifier, rand, age, EnumFacing.SOUTH);
@@ -315,7 +320,8 @@ public class BlockFireEdit extends BlockFire
 
         //If block below is solid OR block below is flammable, spawn 3 smoke particles randomly within top half of fire block
         //This means that the "normal" fire graphic is shown (the one that you see if you light the top of netherrack on fire)
-        if (worldIn.getBlockState(pos.down()).isSideSolid(worldIn, pos.down(), EnumFacing.UP) || canCatchFire(worldIn, pos.down()))
+        BlockPos below = pos.down();
+        if (worldIn.getBlockState(below).isSideSolid(worldIn, below, EnumFacing.UP) || canCatchFire(worldIn, below))
         {
             for (int i = 0; i < 3; ++i)
             {
