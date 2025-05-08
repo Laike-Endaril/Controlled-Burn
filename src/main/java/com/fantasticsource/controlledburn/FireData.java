@@ -103,9 +103,9 @@ public class FireData
         ResourceLocation resourceLocation = new ResourceLocation(blockID);
         Block block = ForgeRegistries.BLOCKS.getValue(resourceLocation);
         if (block != null && block != Blocks.AIR) blocks.add(block);
-        else if (blockID.contains("oredict:"))
+        else if (blockID.contains("oredict:") || blockID.contains("ore:"))
         {
-            for (ItemStack stack : OreDictionary.getOres(blockID.replace("oredict:", "")))
+            for (ItemStack stack : OreDictionary.getOres(blockID.replace("oredict:", "").replace("ore:", "")))
             {
                 block = Block.getBlockFromItem(stack.getItem());
                 if (block != null && block != Blocks.AIR) blocks.add(block); //block CAN be null here
@@ -162,7 +162,7 @@ public class FireData
 
 
         HashSet<Block> blocks;
-        if (domain.equals("oredict")) blocks = blocksMatching(domain + ":" + name);
+        if (domain.equals("oredict") || domain.equals("ore")) blocks = blocksMatching(domain + ":" + name);
         else
         {
             Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(domain, name));
