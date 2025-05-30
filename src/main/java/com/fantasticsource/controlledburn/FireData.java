@@ -1,5 +1,6 @@
 package com.fantasticsource.controlledburn;
 
+import com.fantasticsource.mctools.event.BlockTick;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -11,6 +12,7 @@ import net.minecraftforge.oredict.OreDictionary;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 
 import static com.fantasticsource.controlledburn.FireConfig.*;
 
@@ -19,6 +21,7 @@ public class FireData
     public static int replaceBlockWithFireChanceRange;
     public static LinkedHashMap<IBlockState, IBlockState> blockTransformationMap = new LinkedHashMap<>();
     public static LinkedHashMap<IBlockState, Boolean> fireSourceBlocks = new LinkedHashMap<>();
+    public static LinkedHashSet<IBlockState> blockSpreadsFire = new LinkedHashSet<>();
 
     public static void update()
     {
@@ -115,6 +118,28 @@ public class FireData
 
             for (IBlockState state : fromStates) fireSourceBlocks.put(state, Boolean.parseBoolean(tokens[1].trim()));
         }
+
+
+        blockSpreadsFire.clear();
+        for (String s : FireConfig.blockSpreadsFire)
+        {
+            if (s.contains(","))
+            {
+                System.err.println("Invalid entry for spreading fire like lava: " + s);
+                continue;
+            }
+
+            ArrayList<IBlockState> fromStates = blockstatesMatching(s.trim());
+            if (fromStates == null || fromStates.size() == 0)
+            {
+                System.err.println("Invalid entry for spreading fire like lava: " + s);
+                continue;
+            }
+
+            blockSpreadsFire.addAll(fromStates);
+        }
+        if (blockSpreadsFire.size() > 0) BlockTick.addAction(SpreadFireLikeLava.ACTION);
+        else BlockTick.removeAction(SpreadFireLikeLava.ACTION);
     }
 
 

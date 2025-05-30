@@ -88,6 +88,20 @@ public class FireConfig
     public static String[] fireSourceBlocks = {};
 
 
+    @Config.Name("Block Spreads Fire")
+    @Config.LangKey(ControlledBurn.MODID + ".config.blockSpreadsFire")
+    @Comment({
+            "Additional blocks that can start fires on flammable surfaces nearby, similar to lava",
+            "",
+            "Syntax is [blockID]",
+            "",
+            "The example below would make it dangerous to run a furnace near flammable blocks",
+            "",
+            "minecraft:lit_furnace"
+    })
+    public static String[] blockSpreadsFire = {};
+
+
     public static class GlobalMultipliers
     {
         @Config.Name("Burn Speed Multiplier")
