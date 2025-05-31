@@ -6,6 +6,9 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.oredict.OreDictionary;
 
@@ -19,7 +22,7 @@ import static com.fantasticsource.controlledburn.FireConfig.*;
 public class FireData
 {
     public static int replaceBlockWithFireChanceRange;
-    public static LinkedHashMap<IBlockState, IBlockState> blockTransformationMap = new LinkedHashMap<>();
+    public static LinkedHashMap<FireDataFilter, IBlockState> blockTransformationMap = new LinkedHashMap<>();
     public static LinkedHashMap<IBlockState, Boolean> fireSourceBlocks = new LinkedHashMap<>();
     public static LinkedHashSet<IBlockState> blockSpreadsFire = new LinkedHashSet<>();
 
@@ -31,35 +34,40 @@ public class FireData
         HashSet<Block> blocks;
         String token;
         int flammability = 0, encouragement = 0;
-        boolean sameFlammability = false, sameEncouragement = false;
+        boolean sameFlammability = false, sameEncouragement = false, good;
+        Biome biome;
+        FireDataFilter filter;
+
 
         for (String string : blockSettings)
         {
             String[] tokens = string.split(",");
-            if (tokens.length != 3) System.err.println("Wrong number of arguments for block-specific setting; please check example in tooltip");
-            else
+            if (tokens.length != 3)
             {
-                blocks = blocksMatching(tokens[0].trim());
+                System.err.println("Wrong number of arguments for block-specific setting; please check example in tooltip");
+                continue;
+            }
 
-                if (blocks.size() == 0)
-                {
-                    System.err.println("Block(s) not found: " + tokens[0].trim());
-                }
-                else
-                {
-                    token = tokens[1].trim();
-                    if (token.equals("=")) sameFlammability = true;
-                    else flammability = Integer.parseInt(token);
 
-                    token = tokens[2].trim();
-                    if (token.equals("=")) sameEncouragement = true;
-                    else encouragement = Integer.parseInt(token);
+            blocks = blocksMatching(tokens[0].trim());
+            if (blocks.size() == 0)
+            {
+                System.err.println("Block(s) not found: " + tokens[0].trim());
+                continue;
+            }
 
-                    for (Block b : blocks)
-                    {
-                        Blocks.FIRE.setFireInfo(b, sameEncouragement ? ControlledBurn.OLD_FIRE.getEncouragement(b) : encouragement, sameFlammability ? ControlledBurn.OLD_FIRE.getFlammability(b) : flammability);
-                    }
-                }
+
+            token = tokens[1].trim();
+            if (token.equals("=")) sameFlammability = true;
+            else flammability = Integer.parseInt(token);
+
+            token = tokens[2].trim();
+            if (token.equals("=")) sameEncouragement = true;
+            else encouragement = Integer.parseInt(token);
+
+            for (Block b : blocks)
+            {
+                Blocks.FIRE.setFireInfo(b, sameEncouragement ? ControlledBurn.OLD_FIRE.getEncouragement(b) : encouragement, sameFlammability ? ControlledBurn.OLD_FIRE.getFlammability(b) : flammability);
             }
         }
 
@@ -68,34 +76,48 @@ public class FireData
         for (String s : blockTransformations)
         {
             String[] tokens = s.split(",");
-            if (tokens.length != 2)
+            if (tokens.length < 2)
             {
-                System.err.println("Invalid block transformation entry: " + s);
+                System.err.println("Not enough arguments for transformation entry: " + s);
                 continue;
             }
 
-            ArrayList<IBlockState> fromStates = blockstatesMatching(tokens[0]);
-            ArrayList<IBlockState> toStates = blockstatesMatching(tokens[1]);
+
+            ArrayList<IBlockState> fromStates = blockstatesMatching(tokens[0].trim());
+            ArrayList<IBlockState> toStates = blockstatesMatching(tokens[1].trim(), true);
             if (fromStates == null || toStates == null || fromStates.size() == 0 || toStates.size() == 0)
             {
-                System.err.println("Invalid block transformation entry: " + s);
+                System.err.println("One or more blocks not found for transformation entry: " + s);
                 continue;
             }
 
-            if (toStates.size() > 1 && fromStates.size() == toStates.size())
+
+            filter = new FireDataFilter();
+            good = true;
+            for (int i = 2; i < tokens.length; i++)
             {
-                for (int i = 0; i < fromStates.size(); i++)
+                token = tokens[i].trim();
+                try
                 {
-                    blockTransformationMap.put(fromStates.get(i), toStates.get(i));
+                    filter.dimensions.add(Integer.parseInt(token));
+                }
+                catch (NumberFormatException e)
+                {
+                    biome = ForgeRegistries.BIOMES.getValue(new ResourceLocation(token));
+                    if (biome != null) filter.biomes.add(biome);
+                    else
+                    {
+                        System.err.println("Bad dimension number or biome name: " + token);
+                        good = false;
+                        break;
+                    }
                 }
             }
-            else
-            {
-                for (IBlockState state : fromStates)
-                {
-                    blockTransformationMap.put(state, toStates.get(0));
-                }
-            }
+            if (!good) continue;
+
+
+            filter.blockStates.addAll(fromStates);
+            blockTransformationMap.put(filter, toStates.get(0));
         }
 
 
@@ -145,24 +167,35 @@ public class FireData
 
     protected static HashSet<Block> blocksMatching(String blockID)
     {
+        return blocksMatching(blockID, false);
+    }
+
+    protected static HashSet<Block> blocksMatching(String blockID, boolean allowAir)
+    {
         HashSet<Block> blocks = new HashSet<>();
 
         ResourceLocation resourceLocation = new ResourceLocation(blockID);
         Block block = ForgeRegistries.BLOCKS.getValue(resourceLocation);
-        if (block != null && block != Blocks.AIR) blocks.add(block);
+        if (block != null && (allowAir || block != Blocks.AIR)) blocks.add(block);
         else if (blockID.contains("oredict:") || blockID.contains("ore:"))
         {
             for (ItemStack stack : OreDictionary.getOres(blockID.replace("oredict:", "").replace("ore:", "")))
             {
                 block = Block.getBlockFromItem(stack.getItem());
-                if (block != null && block != Blocks.AIR) blocks.add(block); //block CAN be null here
+                if (block != null && (allowAir || block != Blocks.AIR)) blocks.add(block); //block CAN be null here
             }
         }
 
         return blocks;
     }
 
+
     protected static ArrayList<IBlockState> blockstatesMatching(String blockID)
+    {
+        return blockstatesMatching(blockID, false);
+    }
+
+    protected static ArrayList<IBlockState> blockstatesMatching(String blockID, boolean allowAir)
     {
         ArrayList<IBlockState> result = new ArrayList<>();
 
@@ -209,11 +242,11 @@ public class FireData
 
 
         HashSet<Block> blocks;
-        if (domain.equals("oredict") || domain.equals("ore")) blocks = blocksMatching(domain + ":" + name);
+        if (domain.equals("oredict") || domain.equals("ore")) blocks = blocksMatching(domain + ":" + name, allowAir);
         else
         {
             Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(domain, name));
-            if (block == null || block == Blocks.AIR) return result;
+            if (block == null || (!allowAir && block == Blocks.AIR)) return result;
 
             blocks = new HashSet<>();
             blocks.add(block);
@@ -255,5 +288,49 @@ public class FireData
         }
 
         return result;
+    }
+
+
+    public static class FireDataFilter
+    {
+        public ArrayList<Integer> dimensions = new ArrayList<>();
+        public ArrayList<Biome> biomes = new ArrayList<>();
+        public ArrayList<IBlockState> blockStates = new ArrayList<>();
+
+
+        @Override
+        protected FireDataFilter clone()
+        {
+            FireDataFilter other = new FireDataFilter();
+            other.dimensions.addAll(dimensions);
+            other.biomes.addAll(biomes);
+            other.blockStates.addAll(blockStates);
+            return other;
+        }
+
+
+        public boolean matches(World world, BlockPos pos, IBlockState state)
+        {
+            if (!blockStates.contains(state)) return false;
+            if (dimensions.size() != 0 && !dimensions.contains(world.provider.getDimension())) return false;
+            if (biomes.size() != 0 && !biomes.contains(world.getBiome(pos))) return false;
+            return true;
+        }
+
+
+        @Override
+        public int hashCode()
+        {
+            return (dimensions.hashCode() << biomes.hashCode()) ^ blockStates.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (!(obj instanceof FireDataFilter)) return false;
+
+            FireDataFilter other = (FireDataFilter) obj;
+            return (other.dimensions.equals(dimensions) && other.biomes.equals(biomes) && other.blockStates.equals(blockStates));
+        }
     }
 }

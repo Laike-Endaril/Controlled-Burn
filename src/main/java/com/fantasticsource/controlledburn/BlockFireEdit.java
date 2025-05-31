@@ -17,15 +17,20 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.util.Map;
 import java.util.Random;
 
 import static com.fantasticsource.controlledburn.FireConfig.*;
 
 public class BlockFireEdit extends BlockFire
 {
-    private static boolean tryBurnBlockSpecial(World world, BlockPos pos)
+    private static boolean tryBurnBlockSpecial(World world, BlockPos pos, IBlockState state)
     {
-        IBlockState blockTo = FireData.blockTransformationMap.get(world.getBlockState(pos));
+        IBlockState blockTo = null;
+        for (Map.Entry<FireData.FireDataFilter, IBlockState> entry : FireData.blockTransformationMap.entrySet())
+        {
+            if (entry.getKey().matches(world, pos, state)) blockTo = entry.getValue();
+        }
         if (blockTo != null)
         {
             world.setBlockState(pos, blockTo);
@@ -218,11 +223,11 @@ public class BlockFireEdit extends BlockFire
 
     private void tryBurnAdjacent(World worldIn, BlockPos pos, int chance, Random random, int age, EnumFacing face)
     {
-        IBlockState iblockstate = worldIn.getBlockState(pos);
-        if (random.nextInt(chance) < iblockstate.getBlock().getFlammability(worldIn, pos, face) && !MinecraftForge.EVENT_BUS.post(new BurnBlockEvent(worldIn, pos, iblockstate)))
+        IBlockState state = worldIn.getBlockState(pos);
+        if (random.nextInt(chance) < state.getBlock().getFlammability(worldIn, pos, face) && !MinecraftForge.EVENT_BUS.post(new BurnBlockEvent(worldIn, pos, state)))
         {
             //Destroy (burn) this adjacent block (adjacent to fire)
-            if (!tryBurnBlockSpecial(worldIn, pos))
+            if (!tryBurnBlockSpecial(worldIn, pos, state))
             {
                 int replaceBlockWithFireChance;
                 if (ControlledBurn.fireAgeRange() == 0) replaceBlockWithFireChance = burnSpreadChances.minBurnSpreadChance + ControlledBurn.replaceBlockWithFireChanceRange / 2;
@@ -264,9 +269,9 @@ public class BlockFireEdit extends BlockFire
                 }
             }
 
-            if (iblockstate.getBlock() == Blocks.TNT)
+            if (state.getBlock() == Blocks.TNT)
             {
-                Blocks.TNT.onBlockDestroyedByPlayer(worldIn, pos, iblockstate.withProperty(BlockTNT.EXPLODE, true));
+                Blocks.TNT.onBlockDestroyedByPlayer(worldIn, pos, state.withProperty(BlockTNT.EXPLODE, true));
             }
         }
     }

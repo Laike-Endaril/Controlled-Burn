@@ -87,7 +87,7 @@ public class ControlledBurn
         //Copy fire-related stats for vanilla blocks
         for (Block b : ForgeRegistries.BLOCKS.getValues())
         {
-            if (OLD_FIRE.getEncouragement(b) != 0 && b != Blocks.AIR)
+            if (b != Blocks.AIR && OLD_FIRE.getEncouragement(b) != 0)
             {
                 Blocks.FIRE.setFireInfo(b, OLD_FIRE.getEncouragement(b), OLD_FIRE.getFlammability(b));
             }
