@@ -23,7 +23,7 @@ public class FireData
 {
     public static int replaceBlockWithFireChanceRange;
     public static LinkedHashMap<FireDataFilter, IBlockState> blockTransformationMap = new LinkedHashMap<>();
-    public static LinkedHashMap<IBlockState, Boolean> fireSourceBlocks = new LinkedHashMap<>();
+    public static LinkedHashMap<FireDataFilter, Boolean> fireSourceBlocks = new LinkedHashMap<>();
     public static LinkedHashSet<IBlockState> blockSpreadsFire = new LinkedHashSet<>();
 
     public static void update()
@@ -107,7 +107,7 @@ public class FireData
                     if (biome != null) filter.biomes.add(biome);
                     else
                     {
-                        System.err.println("Bad dimension number or biome name: " + token);
+                        System.err.println("Bad dimension number or biome name for transformation entry: " + token);
                         good = false;
                         break;
                     }
@@ -125,20 +125,46 @@ public class FireData
         for (String s : FireConfig.fireSourceBlocks)
         {
             String[] tokens = s.split(",");
-            if (tokens.length != 2)
+            if (tokens.length < 2)
             {
-                System.err.println("Invalid fire source entry: " + s);
+                System.err.println("Not enough arguments for fire source entry: " + s);
                 continue;
             }
 
             ArrayList<IBlockState> fromStates = blockstatesMatching(tokens[0]);
             if (fromStates == null || fromStates.size() == 0)
             {
-                System.err.println("Invalid fire source entry: " + s);
+                System.err.println("Block(s) not found for fire source entry: " + s);
                 continue;
             }
 
-            for (IBlockState state : fromStates) fireSourceBlocks.put(state, Boolean.parseBoolean(tokens[1].trim()));
+
+            filter = new FireDataFilter();
+            good = true;
+            for (int i = 2; i < tokens.length; i++)
+            {
+                token = tokens[i].trim();
+                try
+                {
+                    filter.dimensions.add(Integer.parseInt(token));
+                }
+                catch (NumberFormatException e)
+                {
+                    biome = ForgeRegistries.BIOMES.getValue(new ResourceLocation(token));
+                    if (biome != null) filter.biomes.add(biome);
+                    else
+                    {
+                        System.err.println("Bad dimension number or biome name for fire source entry: " + token);
+                        good = false;
+                        break;
+                    }
+                }
+            }
+            if (!good) continue;
+
+
+            filter.blockStates.addAll(fromStates);
+            fireSourceBlocks.put(filter, Boolean.parseBoolean(tokens[1].trim()));
         }
 
 

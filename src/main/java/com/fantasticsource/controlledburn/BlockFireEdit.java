@@ -276,9 +276,13 @@ public class BlockFireEdit extends BlockFire
         }
     }
 
-    private boolean isFireSourceEdit(World world, BlockPos pos, Block block, IBlockState blockState)
+    private boolean isFireSourceEdit(World world, BlockPos pos, Block block, IBlockState state)
     {
-        Boolean result = FireData.fireSourceBlocks.get(blockState);
+        Boolean result = null;
+        for (Map.Entry<FireData.FireDataFilter, Boolean> entry : FireData.fireSourceBlocks.entrySet())
+        {
+            if (entry.getKey().matches(world, pos, state)) result = entry.getValue();
+        }
         if (result != null) return result;
 
 
