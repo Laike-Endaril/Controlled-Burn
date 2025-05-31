@@ -48,7 +48,7 @@ public class FireConfig
             "",
             "Setting flammability to a negative value makes a block behave like netherrack (as far as fire goes)",
             "",
-            "Syntax is [blockID, flammability, encouragement]. Examples below",
+            "Syntax is <blockID, flammability, encouragement>. Examples below",
             "minecraft:grass, 5, 5",
             "minecraft:dirt, =, 5",
             "oredict:stone, 5, 5"
@@ -64,7 +64,10 @@ public class FireConfig
             "minecraft:grass, minecraft:dirt",
             "",
             "You can also use oredict:",
-            "oredict:logWood, coal_block",
+            "oredict:logWood, minecraft:coal_block",
+            "",
+            "And you can filter by dimension(s) and biome(s):",
+            "minecraft:planks, minecraft:glowstone, 0, minecraft:river",
             "",
             "Keep in mind that this won't do anything unless you make sure the first block is actually flammable (and maybe give it encouragement too, depending; see the MC wiki for more info on those stats)"
     })
@@ -76,7 +79,9 @@ public class FireConfig
     @Comment({
             "Whether blocks keep fire on top of them lit, even in rain, like how netherrack works",
             "",
-            "Syntax is [blockID, beFireSource]",
+            "Syntax is <blockID, beFireSource> [dimensionOrBiome, dimensionOrBiome, etc...]",
+            "Eg:",
+            "minecraft:stone, true, 0, minecraft:extreme_hills",
             "",
             "Examples below would remove all vanilla blocks that normally are, and add red nether brick instead",
             "",
@@ -93,7 +98,9 @@ public class FireConfig
     @Comment({
             "Additional blocks that can start fires on flammable surfaces nearby, similar to lava",
             "",
-            "Syntax is [blockID]",
+            "Syntax is <blockID> [dimensionOrBiome, dimensionOrBiome, etc...]",
+            "Eg:",
+            "minecraft:torch, 0, minecraft:forest",
             "",
             "The example below would make it dangerous to run a furnace near flammable blocks",
             "",
