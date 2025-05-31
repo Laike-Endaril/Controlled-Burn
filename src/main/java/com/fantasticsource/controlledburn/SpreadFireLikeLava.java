@@ -21,7 +21,16 @@ public class SpreadFireLikeLava
         int x = event.x, y = event.y, z = event.z;
         MUT_POS.setPos(x, y, z);
         IBlockState state = world.getBlockState(MUT_POS);
-        if (!FireData.blockSpreadsFire.contains(state)) return false;
+        boolean good = false;
+        for (FireData.FireDataFilter filter : FireData.blockSpreadsFire)
+        {
+            if (filter.matches(world, MUT_POS, state))
+            {
+                good = true;
+                break;
+            }
+        }
+        if (!good) return false;
 
 
         int flareHeight = Tools.random(3);

@@ -24,7 +24,7 @@ public class FireData
     public static int replaceBlockWithFireChanceRange;
     public static LinkedHashMap<FireDataFilter, IBlockState> blockTransformationMap = new LinkedHashMap<>();
     public static LinkedHashMap<FireDataFilter, Boolean> fireSourceBlocks = new LinkedHashMap<>();
-    public static LinkedHashSet<IBlockState> blockSpreadsFire = new LinkedHashSet<>();
+    public static LinkedHashSet<FireDataFilter> blockSpreadsFire = new LinkedHashSet<>();
 
     public static void update()
     {
@@ -171,20 +171,41 @@ public class FireData
         blockSpreadsFire.clear();
         for (String s : FireConfig.blockSpreadsFire)
         {
-            if (s.contains(","))
-            {
-                System.err.println("Invalid entry for spreading fire like lava: " + s);
-                continue;
-            }
-
-            ArrayList<IBlockState> fromStates = blockstatesMatching(s.trim());
+            String[] tokens = s.split(",");
+            ArrayList<IBlockState> fromStates = blockstatesMatching(tokens[0].trim());
             if (fromStates == null || fromStates.size() == 0)
             {
                 System.err.println("Invalid entry for spreading fire like lava: " + s);
                 continue;
             }
 
-            blockSpreadsFire.addAll(fromStates);
+
+            filter = new FireDataFilter();
+            good = true;
+            for (int i = 1; i < tokens.length; i++)
+            {
+                token = tokens[i].trim();
+                try
+                {
+                    filter.dimensions.add(Integer.parseInt(token));
+                }
+                catch (NumberFormatException e)
+                {
+                    biome = ForgeRegistries.BIOMES.getValue(new ResourceLocation(token));
+                    if (biome != null) filter.biomes.add(biome);
+                    else
+                    {
+                        System.err.println("Bad dimension number or biome name for spreading fire like lava: " + token);
+                        good = false;
+                        break;
+                    }
+                }
+            }
+            if (!good) continue;
+
+
+            filter.blockStates.addAll(fromStates);
+            blockSpreadsFire.add(filter);
         }
         if (blockSpreadsFire.size() > 0) BlockTick.addAction(SpreadFireLikeLava.ACTION);
         else BlockTick.removeAction(SpreadFireLikeLava.ACTION);
