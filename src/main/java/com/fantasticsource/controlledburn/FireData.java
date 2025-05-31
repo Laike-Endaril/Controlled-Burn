@@ -175,7 +175,7 @@ public class FireData
             ArrayList<IBlockState> fromStates = blockstatesMatching(tokens[0].trim());
             if (fromStates == null || fromStates.size() == 0)
             {
-                System.err.println("Invalid entry for spreading fire like lava: " + s);
+                System.err.println("Invalid entry for fire spreading blocks: " + s);
                 continue;
             }
 
@@ -195,7 +195,7 @@ public class FireData
                     if (biome != null) filter.biomes.add(biome);
                     else
                     {
-                        System.err.println("Bad dimension number or biome name for spreading fire like lava: " + token);
+                        System.err.println("Bad dimension number or biome name for fire spreading blocks: " + token);
                         good = false;
                         break;
                     }
